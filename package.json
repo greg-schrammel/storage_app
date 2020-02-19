@@ -9,10 +9,7 @@
       "mobile",
       "ui"
     ],
-    "nohoist": [
-      "**/react-native",
-      "**/react-native/**"
-    ]
+    "nohoist": ["mobile/expo", "mobile/expo/**", "mobile/ui"]
   },
   "husky": {
     "hooks": {

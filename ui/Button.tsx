@@ -1,8 +1,8 @@
 import React, { ReactElement } from 'react';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native-web';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 interface ButtonProps {
-  children?: string | ReactElement;
+  text?: string | ReactElement;
   onPress?: () => void;
   outlined?: boolean;
   bgColor?: string;
@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Button({ children, outlined, onPress }: ButtonProps): ReactElement {
+export default function Button({ text, outlined, onPress }: ButtonProps): ReactElement {
   return (
     <TouchableOpacity
       onPress={onPress}
       style={[styles.button, outlined ? styles.outlined : styles.solid]}
     >
-      <Text>{children}</Text>
+      <Text>{text}</Text>
     </TouchableOpacity>
   );
 }

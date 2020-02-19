@@ -1,4 +1,6 @@
-module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
-  plugins: ['react-native-web'],
+module.exports = api => {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
 };
