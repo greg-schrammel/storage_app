@@ -2,6 +2,7 @@
   "name": "mobile",
   "version": "0.0.1",
   "main": "node_modules/expo/AppEntry.js",
+  "private": true,
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -9,20 +10,39 @@
     "web": "expo start --web",
     "eject": "expo eject"
   },
+  "workspaces": {
+    "nohoist": [
+      "**"
+    ]
+  },
   "dependencies": {
+    "@expo/vector-icons": "^10.0.6",
+    "@react-native-community/masked-view": "0.1.5",
+    "@react-navigation/bottom-tabs": "^5.0.7",
+    "@react-navigation/native": "^5.0.7",
+    "@react-navigation/stack": "^5.0.8",
     "expo": "~36.0.0",
+    "expo-blur": "~8.0.0",
+    "expo-constants": "^8.0.0",
+    "expo-linear-gradient": "~8.0.0",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
+    "react-native-gesture-handler": "~1.5.0",
+    "react-native-paper": "^3.6.0",
+    "react-native-reanimated": "~1.4.0",
+    "react-native-safe-area-context": "0.6.0",
     "react-native-screens": "2.0.0-alpha.12",
-    "ui": "1.0.0"
+    "styled-components": "^5.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@types/expo": "^33.0.1",
     "@types/react": "~16.9.0",
     "@types/react-native": "~0.60.23",
+    "@types/styled-components": "^4.4.3",
+    "babel-plugin-module-resolver": "^4.0.0",
     "babel-preset-expo": "~8.0.0",
     "typescript": "~3.6.3"
-  },
-  "private": true
+  }
 }

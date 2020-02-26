@@ -1,21 +1,48 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Button } from 'ui';
+import { FontAwesome } from '@expo/vector-icons';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// import AuthScreen from './screens/Auth';
+import DirectoryScreen from './screens/Directory';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Button text="Entrar" />
-    </View>
-  );
+// const Tab = createBottomTabNavigator();
+
+// const TabIcon = ({ name, color, size }) =>
+//   ({
+//     files: () => <FontAwesome name="folder" color={color} size={size} />,
+//   }[name]());
+
+// const i18n = a =>
+//   ({
+//     files: 'Arquivos',
+//     add: 'Adicionar',
+//   }[a]);
+
+// function App() {
+//   return (
+//     <NavigationContainer>
+//       <Tab.Navigator
+//         screenOptions={({ route }) => ({
+//           tabBarIcon: ({ color }) => <TabIcon name={route.name} color={color} size={22} />,
+//           tabBarLabel: i18n(route.name),
+//           backgroundColor: 'white',
+//         })}
+//         tabBarOptions={{
+//           activeTintColor: 'dodgerblue',
+//           inactiveTintColor: 'gray',
+//         }}
+//         initialRouteName="files"
+//       >
+//         <Tab.Screen name="files" component={DirectoryScreen} />
+//       </Tab.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+
+function App() {
+  return <DirectoryScreen />;
 }
+
+export default App;

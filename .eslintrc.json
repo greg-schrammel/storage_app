@@ -1,3 +1,13 @@
 {
-  "extends": ["airbnb-typescript-prettier"]
+  "extends": ["airbnb-typescript-prettier"],
+  "rules": {
+    "react/jsx-filename-extension": "off"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["mobile"]
+      }
+    }
+  }
 }

@@ -5,11 +5,7 @@
   "repository": "https://github.com/greg-schrammel/gtc_storage.git",
   "license": "UNLICENSED",
   "workspaces": {
-    "packages": [
-      "mobile",
-      "ui"
-    ],
-    "nohoist": ["mobile/expo", "mobile/expo/**", "mobile/ui"]
+    "packages": ["mobile"]
   },
   "husky": {
     "hooks": {
