@@ -6,7 +6,10 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "paths": ["mobile"]
+        "paths": ["mobile"],
+        "moduleDirectory": [
+          "mobile/node_modules"
+        ]
       }
     }
   }

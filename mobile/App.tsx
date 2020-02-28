@@ -5,7 +5,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome } from '@expo/vector-icons';
 
 // import AuthScreen from './screens/Auth';
-import DirectoryScreen from './screens/Directory';
+import { TouchableWithoutFeedback, Keyboard } from 'react-native';
+import DirectoryScreen from 'screens/Directory';
 
 // const Tab = createBottomTabNavigator();
 
@@ -41,8 +42,16 @@ import DirectoryScreen from './screens/Directory';
 //   );
 // }
 
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{children}</TouchableWithoutFeedback>
+);
+
 function App() {
-  return <DirectoryScreen />;
+  return (
+    <DismissKeyboard>
+      <DirectoryScreen />
+    </DismissKeyboard>
+  );
 }
 
 export default App;
