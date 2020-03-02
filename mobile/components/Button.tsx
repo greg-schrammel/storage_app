@@ -1,29 +1,53 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, RegisteredStyle } from 'react-native';
+import Icon from './Icon';
 
 const Styles = StyleSheet.create({
   button: {
-    width: '100%',
-    padding: 20,
+    width: 'auto',
 
     borderRadius: 10,
-    borderWidth: 3,
-    borderColor: 'black',
-    backgroundColor: 'black',
+    backgroundColor: 'transparent',
 
     alignItems: 'center',
     justifyContent: 'center',
   },
+  size_md: {
+    padding: 10,
+    margin: 20,
+  },
+  size_lg: {
+    padding: 20,
+  },
   label: {
-    color: 'white',
-    fontWeight: '800',
+    fontWeight: '600',
     fontSize: 15,
   },
 });
 
-const Button = ({ text, onPress, styles }) => (
-  <TouchableOpacity onPress={onPress} style={[Styles.button, styles.button]}>
-    <Text style={[Styles.label, styles.label]}>{text}</Text>
+interface ButtonProps {
+  children: string;
+  onPress: () => void;
+  style?: RegisteredStyle<TouchableOpacity>;
+  size?: 'md' | 'lg';
+  color?: string;
+  backgroundColor?: string;
+}
+
+const Button = ({ children, onPress, style, size = 'md', color, backgroundColor }: ButtonProps) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[
+      Styles.button,
+      style,
+      { backgroundColor },
+      size === 'md' && Styles.size_md,
+      size === 'lg' && Styles.size_lg,
+    ]}
+  >
+    <Text style={[Styles.label, { color, fontWeight: size === 'md' ? '600' : '800' }]}>
+      {children}
+    </Text>
   </TouchableOpacity>
 );
 

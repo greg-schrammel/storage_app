@@ -1,21 +1,24 @@
 import * as React from 'react';
-import { View, FlatList, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { useState } from 'react';
+import { View, FlatList, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import Icon from 'components/Icon';
+import Popup from 'components/Popup';
+import MenuItem from 'components/MenuItem';
 
 interface ItemProps {
   name: string;
   info: string;
   id: string;
   type: 'folder' | 'music';
-  onPress: () => {};
+  onPress: () => void;
 }
 
 const Styles = StyleSheet.create({
   container: {
-    paddingVertical: 5,
-    marginVertical: 8,
+    paddingVertical: 10,
+    marginVertical: 2,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -32,18 +35,32 @@ const Styles = StyleSheet.create({
 
 // map item type to icon name
 
-const Item = ({ name, info, id, type, onPress }) => (
-  <TouchableOpacity delayPressIn={50}>
-    <View style={Styles.container}>
-      <Icon name={type} size={46} style={{ marginRight: 10 }} />
+const Item = ({ name, info, id, type }: ItemProps) => {
+  const [isOpen, setOpen] = useState(false);
+  return (
+    <TouchableOpacity style={Styles.container}>
+      <Icon name={type} size={36} style={{ marginRight: 10 }} />
       <View style={{ flex: 1 }}>
         <Text style={[Styles.nameLabel, { marginBottom: 2 }]}>{name}</Text>
         <Text style={Styles.infoLabel}>{info}</Text>
       </View>
-      <Icon name="ellipsis-v" size={17} color="silver" />
-    </View>
-  </TouchableOpacity>
-);
+      <Popup
+        isOpen={isOpen}
+        onPressOut={() => setOpen(false)}
+        blurIntensity={0}
+        left
+        trigger={<Icon name="ellipsis-v" onPress={() => setOpen(true)} size={17} color="silver" />}
+        openTrigger={<Icon name="ellipsis-v" size={17} color="silver" />}
+      >
+        <MenuItem icon="i-cursor" label="Renomear" onPressOut={() => null} />
+        <MenuItem icon="star-o" label="Adicionar aos Favoritos" onPressOut={() => null} />
+        <MenuItem icon="copy" label="Mover" onPressOut={() => null} />
+        <MenuItem icon="share-square-o" label="Compartilhar" onPressOut={() => null} />
+        <MenuItem icon="trash-o" label="Excluir" onPressOut={() => null} />
+      </Popup>
+    </TouchableOpacity>
+  );
+};
 
 const data = [
   { id: '12313', type: 'folder', info: '12 items', name: 'musica 1', contents: 1000101 },
@@ -68,11 +85,11 @@ const renderItem = ({ item }) => (
 const List = props => (
   <View style={{ backgroundColor: '#fff', flex: 1 }}>
     <FlatList data={data} keyExtractor={item => item.id} renderItem={renderItem} {...props} />
-    <LinearGradient
+    {/* <LinearGradient
       style={{ position: 'absolute', bottom: 0, width: '100%', height: 30 }}
       colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 1)']}
       pointerEvents="none"
-    />
+    /> */}
   </View>
 );
 

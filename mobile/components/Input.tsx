@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import * as React from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, Text, StyleSheet } from 'react-native';
 
 import Icon from 'components/Icon';
 
@@ -14,18 +14,23 @@ const Styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    marginLeft: 10,
-    color: 'silver',
-    fontWeight: '600',
-    fontSize: 15,
+    fontSize: 16,
   },
 });
 
 const Input = ({ icon, style, ...props }) => (
   <View style={[Styles.input, style]}>
-    <Icon name={icon} size={20} color="lightgrey" />
+    {icon && <Icon name={icon} size={20} color="lightgrey" style={{ marginRight: 10 }} />}
     <TextInput style={Styles.text} {...props} />
   </View>
 );
 
-export default Input;
+const InputWithLabel = ({ label, style, ...props }) => (
+  <View style={{ alignItems: 'center', flexDirection: 'row', ...style }}>
+    <Text style={{ fontWeight: '700' }}>{label}</Text>
+    <Input {...props} style={{ marginLeft: 5 }} />
+  </View>
+);
+
+export default ({ label, ...props }) =>
+  label ? <InputWithLabel label={label} {...props} /> : <Input {...props} />;

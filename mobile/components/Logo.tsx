@@ -7,7 +7,6 @@ import logo_black from 'assets/logo_black.png';
 const Logo = ({ width, height, black }) => (
   <Image
     style={{
-      flex: 1,
       width,
       height,
       resizeMode: 'contain',
