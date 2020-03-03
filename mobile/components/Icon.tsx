@@ -31,7 +31,7 @@ const Icon = ({ name, size, color, style, onPress, _ref }: IconProps) => (
   >
     <View style={[style, { width: size, alignItems: 'center', justifyContent: 'center' }]}>
       {{
-        folder: () => <FontAwesome name="folder" color={color || '#00BFFF'} size={size} />,
+        folder: () => <FontAwesome name="folder" color={color || 'deepskyblue'} size={size} />,
         'folder-o': () => <FontAwesome name="folder-o" color={color} size={size} />,
         mp3: () => <FontAwesome name="music" color={color} size={size} />,
         'ellipsis-v': () => <FontAwesome name="ellipsis-v" size={size} color={color} />,

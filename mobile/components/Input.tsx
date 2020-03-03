@@ -8,7 +8,6 @@ const Styles = StyleSheet.create({
   input: {
     borderRadius: 10,
     backgroundColor: 'whitesmoke',
-    flex: 1,
     flexDirection: 'row',
     padding: 10,
   },

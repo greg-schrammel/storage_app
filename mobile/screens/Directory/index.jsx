@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Keyboard, SafeAreaView, View, Text } from 'react-native';
 
 import { statusBarHeight } from 'expo-constants';
@@ -8,10 +8,17 @@ import AddItem from 'screens/Directory/components/AddItem';
 import List from 'screens/Directory/components/List';
 import Input from 'components/Input';
 import Icon from 'components/Icon';
-import Logo from 'components/Logo';
+import BluryOverlay from 'components/BluryOverlay';
+import Card from 'components/Card';
+import Typography from 'components/Typography';
 
-const Header = ({ style }) => {
-  const [search, onSearchValue] = useState('');
+const Header = ({ style, onSearch }) => {
+  const [isSearchOpen, setSearchOpen] = useState(false);
+  const [search, setSearchValue] = useState('');
+  React.useEffect(() => {
+    if (search !== '') onSearch(search);
+  }, [search]);
+  // useKeyboardDismiss(() => setSearchOpen(false));
   return (
     <View
       style={{
@@ -22,17 +29,34 @@ const Header = ({ style }) => {
         ...style,
       }}
     >
-      <Icon onPress={() => null} name="search" size={20} />
-      {/* <Input
-        icon="search"
-        placeholder="Busca"
-        returnKeyType="search"
-        clearButtonMode="while-editing"
-        value={search}
-        onChangeText={onSearchValue}
-        // style={{ marginRight: 20 }}
-      /> */}
-      {/* <Icon onPress={() => null} name="user" size={24} color="lightgrey" /> */}
+      {!isSearchOpen ? (
+        <Icon onPress={() => setSearchOpen(true)} name="search" size={20} />
+      ) : (
+        <BluryOverlay onPressOut={() => setSearchOpen(false)}>
+          <SafeAreaView>
+            <Card
+              style={{
+                marginHorizontal: 15,
+                marginTop: statusBarHeight,
+                paddingVertical: 15,
+                height: '60%',
+              }}
+            >
+              <Input
+                icon="search"
+                onBlur={() => setSearchOpen(false)}
+                placeholder="Busca"
+                returnKeyType="search"
+                clearButtonMode="while-editing"
+                value={search}
+                onChangeText={setSearchValue}
+                style={{ marginHorizontal: 15 }}
+              />
+              <List items={data} style={{ paddingHorizontal: 20 }} />
+            </Card>
+          </SafeAreaView>
+        </BluryOverlay>
+      )}
     </View>
   );
 };
@@ -41,32 +65,35 @@ const ListHeader = ({ style }) => {
   return (
     <View style={style}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ fontSize: 32, fontWeight: '800' }}>Meus Arquivos</Text>
+        <Text style={Typography.header}>Meus Arquivos</Text>
         <AddItem />
       </View>
-      <Text
-        style={{
-          fontSize: 16,
-          color: 'silver',
-          fontWeight: '600',
-          margin: 10,
-          marginTop: 5,
-        }}
-      >
-        /ahskuh
-      </Text>
+      <Text style={[Typography.caption2, { margin: 10, marginTop: 5 }]}>/ahskuh</Text>
     </View>
   );
 };
 
+const data = [
+  { id: '12313', type: 'folder', info: '12 items', name: 'musica 1', contents: 1000101 },
+  { id: '1231', type: 'mp3', info: 'criado em 10/02/2020', name: 'pastaaaa', contents: 1000101 },
+  { id: '12213123313', type: 'folder', name: 'musica 1', contents: 1000101 },
+  { id: '121223443', type: 'folder', name: 'pastaaaa', contents: 1000101 },
+  { id: '12322213', type: 'folder', name: 'musica 1', contents: 1000101 },
+  { id: '1222323443', type: 'folder', name: 'pastaaaa', contents: 1000101 },
+  { id: '123123333', type: 'folder', name: 'musica 1', contents: 1000101 },
+];
+
 export default function DirectoryScreen() {
-  // const [search, setSearch] = useState('');
+  const [search, setSearchValue] = useState('');
+  useEffect(() => {
+    // change list items to
+  }, [search]);
   return (
     <SafeAreaView style={{ flex: 1, marginTop: statusBarHeight }}>
       <View style={{ backgroundColor: 'white', flex: 1 }}>
         <Header style={{ paddingHorizontal: 20 }} />
-        <ListHeader style={{ paddingHorizontal: 20 }} />
-        <List style={{ paddingHorizontal: 20 }} />
+        <ListHeader onSearch={setSearchValue} style={{ paddingHorizontal: 20 }} />
+        <List items={data} style={{ paddingHorizontal: 20 }} />
       </View>
       <View
         style={{
@@ -79,7 +106,6 @@ export default function DirectoryScreen() {
       >
         <Icon name="star" size={24} color="lightgrey" />
         <Icon name="folder" size={24} color="dodgerblue" />
-        <Icon name="user" size={24} color="lightgrey" />
         <Icon name="user" size={24} color="lightgrey" />
       </View>
     </SafeAreaView>
