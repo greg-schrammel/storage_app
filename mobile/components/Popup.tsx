@@ -1,18 +1,9 @@
 import * as React from 'react';
-import { useRef, useState, useCallback } from 'react';
-import { View, Dimensions, ModalBaseProps, findNodeHandle } from 'react-native';
+import { useRef, useState } from 'react';
+import { View, Dimensions, ModalBaseProps, StyleProp, ViewStyle } from 'react-native';
 
 import BluryOverlay from 'components/BluryOverlay';
 import Card from 'components/Card';
-
-interface PositionProps {
-  width?: number;
-  x: number;
-  y: number;
-  left?: boolean;
-  top?: boolean;
-  children: React.ReactElement;
-}
 
 interface PopupProps {
   children: React.ReactElement | Array<React.ReactElement>;
@@ -33,18 +24,20 @@ interface NativeMeasureLayout {
   height: number;
 }
 
-const Position = ({ width, x, y, left, top, children }: PositionProps) => (
-  <View
-    style={{
-      position: 'absolute',
-      ...(left ? { right: Dimensions.get('window').width - x - width / 2 } : { left: x }),
-      ...(top ? { bottom: Dimensions.get('window').height - y } : { top: y }),
-    }}
-  >
-    {children}
-  </View>
-);
+interface PositionStyles {
+  x: number;
+  y: number;
+  left?: boolean;
+  top?: boolean;
+}
 
+const positionStyles = ({ x, y, left, top }: PositionStyles): StyleProp<ViewStyle> => ({
+  position: 'absolute',
+  ...(left ? { right: Dimensions.get('window').width - x } : { left: x }),
+  ...(top ? { bottom: Dimensions.get('window').height - y } : { top: y }),
+});
+
+// Probably won't work on landscape
 const Popup = ({
   children,
   trigger,
@@ -58,24 +51,43 @@ const Popup = ({
 }: PopupProps) => {
   const triggerRef = useRef(null);
   const containerRef = useRef(null);
-  const [triggerLayout, setTriggerLayout] = useState<NativeMeasureLayout>();
   const [containerPosition, setContainerPosition] = useState({ top, left });
+  const [triggerLayout, setTriggerLayout] = useState<NativeMeasureLayout>();
+  const [readyToRender, setReadyToRender] = useState(false);
 
   // useLayoutEffect doesnt seems to work,
   // and the onLayout callback does not give me the correct "y"
   // (it's based on parent component, not in the whole window)
   const calculateTriggerPosition = () =>
-    triggerRef.current.measure((ox, oy, width, height, x, y) =>
+    triggerRef.current.measure((_x, _y, width, height, x, y) =>
       setTriggerLayout({ x, y, width, height }),
     );
 
   const repositionWhenOutOfScreen = () => {
-    containerRef.current.measure((ox, oy, width, height, x, y) => {
-      const canBeOnBottom = y + height + 20 <= Dimensions.get('window').height; // add 20 for safe area etc
-      const canBeOnLeft = x + width <= Dimensions.get('window').width;
-      setContainerPosition({ top: , left: !shouldBeOnRight });
+    containerRef.current.measureInWindow((_x, _y, width, height) => {
+      const canBeOnBottom = triggerLayout.y + height + 20 <= Dimensions.get('window').height; // add 20 for safe area like Iphone X+ home indicator
+      const canBeOnTop = triggerLayout.y - height - 20 >= 0; // add 20 for safe area like Iphone X+ top notch
+      const canBeOnRight = triggerLayout.x + width <= Dimensions.get('window').width;
+      const canBeOnLeft = triggerLayout.x - width >= 0;
+      setContainerPosition({
+        top: top ? canBeOnTop : !canBeOnBottom,
+        left: left ? canBeOnLeft : !canBeOnRight,
+      });
+      setReadyToRender(true);
     });
   };
+
+  const containerPositionStyles = positionStyles({
+    left: containerPosition.left,
+    top: containerPosition.top,
+    x: triggerLayout.x + triggerLayout.width / 2,
+    y: triggerLayout.y + (containerPosition.top ? 0 : triggerLayout.height),
+  });
+
+  const triggerPositionStyles = positionStyles({
+    x: triggerLayout.x,
+    y: triggerLayout.y,
+  });
 
   const position = `${containerPosition.top ? 'Bottom' : 'Top'}${
     containerPosition.left ? 'Right' : 'Left'
@@ -86,24 +98,27 @@ const Popup = ({
       {trigger}
     </View>
   ) : (
-    <BluryOverlay onPressOut={onPressOut} intensity={blurIntensity} animationType={animationType}>
-      <Position x={triggerLayout.x} y={triggerLayout.y}>
-        {openTrigger}
-      </Position>
-      <Position
-        left={containerPosition.left}
-        top={containerPosition.top}
-        width={triggerLayout.width}
-        x={triggerLayout.x}
-        y={triggerLayout.y + (containerPosition.top ? 0 : triggerLayout.height)}
-      >
-        <View ref={containerRef} onLayout={repositionWhenOutOfScreen}>
-          <Card style={{ paddingVertical: 10, width: 'auto', [`border${position}Radius`]: 5 }}>
-            {children}
-          </Card>
+    <>
+      {blurIntensity === 0 && (
+        <View ref={triggerRef} onLayout={calculateTriggerPosition}>
+          {trigger}
         </View>
-      </Position>
-    </BluryOverlay>
+      )}
+      <BluryOverlay onPressOut={onPressOut} intensity={blurIntensity} animationType={animationType}>
+        {blurIntensity !== 0 && <View style={triggerPositionStyles}>{openTrigger}</View>}
+        <Card
+          ref={containerRef}
+          onLayout={repositionWhenOutOfScreen}
+          style={[
+            containerPositionStyles,
+            { opacity: readyToRender ? 100 : 0, [`border${position}Radius`]: 5 },
+            { paddingVertical: 10, marginVertical: 5 },
+          ]}
+        >
+          {children}
+        </Card>
+      </BluryOverlay>
+    </>
   );
 };
 

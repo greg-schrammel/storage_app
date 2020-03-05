@@ -22,10 +22,11 @@ interface ItemProps {
   onPress: () => void;
 }
 
+const ITEM_HEIGHT = 60;
+
 const Styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
-    marginVertical: 2,
+    height: ITEM_HEIGHT,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -81,11 +82,12 @@ interface ListProps {
 }
 
 const List = ({ items, style, onPressItem }: ListProps) => (
-  <View style={{ backgroundColor: '#fff', flex: 1 }}>
+  <View style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
     <FlatList
       data={items}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <Item item={item} onPress={() => onPressItem(item.id)} />}
+      getItemLayout={(data, index) => ({ length: ITEM_HEIGHT, offset: ITEM_HEIGHT * index, index })}
       style={style}
     />
     {/* <LinearGradient

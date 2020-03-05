@@ -60,6 +60,7 @@ const AddItemButton = ({ onAdd }) => {
       isOpen={isOpen}
       onPressOut={() => setOpen(false)}
       animationType="fade"
+      left
       trigger={<Icon name="plus" onPress={() => setOpen(true)} size={24} />}
       openTrigger={<Icon name="plus" size={24} />}
     >

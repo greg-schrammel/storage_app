@@ -29,34 +29,39 @@ const Header = ({ style, onSearch }) => {
         ...style,
       }}
     >
-      {!isSearchOpen ? (
-        <Icon onPress={() => setSearchOpen(true)} name="search" size={20} />
-      ) : (
-        <BluryOverlay onPressOut={() => setSearchOpen(false)}>
-          <SafeAreaView>
-            <Card
-              style={{
-                marginHorizontal: 15,
-                marginTop: statusBarHeight,
-                paddingVertical: 15,
-                height: '60%',
-              }}
-            >
-              <Input
-                icon="search"
-                onBlur={() => setSearchOpen(false)}
-                placeholder="Busca"
-                returnKeyType="search"
-                clearButtonMode="while-editing"
-                value={search}
-                onChangeText={setSearchValue}
-                style={{ marginHorizontal: 15 }}
-              />
-              <List items={data} style={{ paddingHorizontal: 20 }} />
-            </Card>
-          </SafeAreaView>
-        </BluryOverlay>
-      )}
+      {/* {!isSearchOpen ? ( */}
+      <Icon onPress={() => setSearchOpen(true)} name="search" size={20} />
+      {
+        // ) : (
+        //   <BluryOverlay onPressOut={() => setSearchOpen(false)}>
+        //     <SafeAreaView style={{ flex: 1 }}>
+        //       <Card
+        //         style={{
+        //           marginHorizontal: 15,
+        //           marginTop: statusBarHeight,
+        //           paddingVertical: 15,
+        //           height: '60%',
+        //         }}
+        //       >
+        //         <Input
+        //           icon="search"
+        //           onBlur={() => setSearchOpen(false)}
+        //           placeholder="Busca"
+        //           returnKeyType="search"
+        //           clearButtonMode="while-editing"
+        //           value={search}
+        //           onChangeText={setSearchValue}
+        //           style={{ marginHorizontal: 15 }}
+        //         />
+        //         <Text style={[Typography.subheader, { padding: 20, paddingBottom: 5 }]}>
+        //           Resultado da busca:
+        //         </Text>
+        //         <List items={data} style={{ paddingHorizontal: 20 }} />
+        //       </Card>
+        //     </SafeAreaView>
+        //   </BluryOverlay>
+        // )}
+      }
     </View>
   );
 };
@@ -75,7 +80,7 @@ const ListHeader = ({ style }) => {
 
 const data = [
   { id: '12313', type: 'folder', info: '12 items', name: 'musica 1', contents: 1000101 },
-  { id: '1231', type: 'mp3', info: 'criado em 10/02/2020', name: 'pastaaaa', contents: 1000101 },
+  { id: '1231', type: 'folder', info: 'criado em 10/02/2020', name: 'pastaaaa', contents: 1000101 },
   { id: '12213123313', type: 'folder', name: 'musica 1', contents: 1000101 },
   { id: '121223443', type: 'folder', name: 'pastaaaa', contents: 1000101 },
   { id: '12322213', type: 'folder', name: 'musica 1', contents: 1000101 },
