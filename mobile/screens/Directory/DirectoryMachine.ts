@@ -1,6 +1,6 @@
 import { Machine, assign, send, State, Interpreter } from 'xstate';
 
-import { Item } from './components/ListItem';
+import { Item, uid } from './components/ListItem';
 import { SortByKeys } from './components/SortBy';
 
 type SearchEvent = { type: 'searchChange'; search: string } | { type: 'cancel' };
@@ -24,15 +24,16 @@ const SearchMachine = Machine<{ search: string }, SearchEvent>({
   },
 });
 
-type PressItemEvent = { type: 'pressItem'; id: string };
 export type FolderEvent =
   | SearchEvent
-  | PressItemEvent
   | BulkEvents
   | { type: 'toggleSelecting' }
   | { type: 'search' }
   | { type: 'sort'; by: SortByKeys }
-  | { type: 'add'; item: Item };
+  | { type: 'add'; item: Item }
+  | { type: 'pressItem'; id: uid }
+  | { type: 'addFolder' }
+  | { type: 'addMedia' };
 
 interface FolderContext {
   parent: 'string' | null;
@@ -87,10 +88,9 @@ const FolderMachine = Machine<FolderContext, FolderEvent>(
       idle: {
         on: {
           toggleSelecting: 'selecting',
-          add: {
-            actions: ['addItem'],
-          },
           pressItem: 'open',
+          addFolder: 'adding.folder',
+          addMedia: 'adding.media',
         },
       },
       selecting: {
@@ -104,6 +104,19 @@ const FolderMachine = Machine<FolderContext, FolderEvent>(
             actions: (_ctx, { id }) => send('select', { to: 'bulk', id }),
           },
           toggleSelecting: 'idle',
+        },
+      },
+      adding: {
+        states: {
+          media: {},
+          folder: {},
+        },
+        on: {
+          add: {
+            target: 'idle',
+            actions: ['addItem'],
+          },
+          cancel: 'idle',
         },
       },
       searching: {
@@ -126,8 +139,8 @@ const FolderMachine = Machine<FolderContext, FolderEvent>(
   },
   {
     actions: {
-      sort: (ctx, e) => null,
-      addItem: (ctx, e) => assign({ ...ctx, items: [...ctx.items, e] }),
+      sort: (ctx, e) => null, // assign({ items: ctx.items.sort() }),
+      addItem: (ctx, e) => assign({ items: [...ctx.items, e] }),
     },
   },
 );

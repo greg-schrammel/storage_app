@@ -6,9 +6,7 @@ import Typography from 'components/Typography';
 import Input from 'components/Input';
 import Button from 'components/Button';
 
-import { Event } from 'xstate';
-import SortBy, { SortByKeys } from './SortBy';
-import { DirectoryEvent } from '../DirectoryMachine';
+import SortBy from './SortBy';
 import { useDirectory } from '../useDirectory';
 
 const SelectButton = ({ onPress, isSelecting }) => (

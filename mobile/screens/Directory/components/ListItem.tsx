@@ -10,16 +10,18 @@ import { useDirectory } from '../useDirectory';
 
 export type ItemTypes = 'folder' | 'audio' | 'photo' | 'video' | 'file' | 'zip';
 
+export type uid = string;
+
 export interface Item {
-  id: string;
+  id: uid;
   name: string;
   type: ItemTypes;
-  contents?: BinaryType;
+  contents: Array<uid | null> | BinaryType;
   meta: ItemMeta;
 }
 
 interface ItemMeta {
-  creationTime: Date;
+  creationTime: number;
   itemsCount?: number;
 }
 
@@ -90,7 +92,6 @@ export const ITEM_HEIGHT = 60;
 
 const Item = ({ item: { id, name, type, meta }, style }: ListItemProps) => {
   const [state, send] = useDirectory();
-  console.log(123);
   const isSelecting = state.matches('selecting');
   const Preview = ListItemPreview[type] || ListItemPreview.file;
   return (
@@ -104,7 +105,9 @@ const Item = ({ item: { id, name, type, meta }, style }: ListItemProps) => {
       <View style={{ flex: 1, marginLeft: 10 }}>
         <Text style={[Typography.subheader, { marginBottom: 2 }]}>{name}</Text>
         <Text style={[Typography.caption, { color: 'silver' }]}>
-          {type === 'folder' ? meta.itemsCount : meta.creationTime}
+          {/* type === 'folder' ? meta.itemsCount : */ `criado em ${new Date(
+            meta.creationTime,
+          ).toLocaleDateString()}`}
         </Text>
       </View>
       <Options onSelect={action => send({ type: action, item: id })} />

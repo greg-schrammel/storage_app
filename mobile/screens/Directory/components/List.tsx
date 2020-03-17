@@ -42,36 +42,42 @@ const ListEmptyItemStyle = StyleSheet.create({
   },
 });
 
-const ListEmptyComponent = () => [
-  <Text style={[Typography.caption2, { textAlign: 'center', margin: 20, marginBottom: 10 }]}>
-    Esta vazio por aqui, adicione alguma coisa
-  </Text>,
-  <TouchableOpacity style={ListEmptyItemStyle.container}>
-    <Text style={Typography.subheader}>Crie uma pasta</Text>
-    <Icon name="folder" size={20} />
-  </TouchableOpacity>,
-  <TouchableOpacity style={ListEmptyItemStyle.container}>
-    <Text style={[Typography.subheader]}>Salve da sua galeria</Text>
-    <Icon name="photo" size={20} />
-  </TouchableOpacity>,
-];
+const ListEmptyComponent = ({ onAddFolder, onAddMedia }) => (
+  <>
+    <Text style={[Typography.caption2, { textAlign: 'center', margin: 20, marginBottom: 10 }]}>
+      Esta vazio por aqui, adicione alguma coisa
+    </Text>
+    <TouchableOpacity onPress={onAddFolder} style={ListEmptyItemStyle.container}>
+      <Text style={Typography.subheader}>Crie uma pasta</Text>
+      <Icon name="folder" size={20} />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={onAddMedia} style={ListEmptyItemStyle.container}>
+      <Text style={[Typography.subheader]}>Salve da galeria</Text>
+      <Icon name="photo" size={20} />
+    </TouchableOpacity>
+  </>
+);
 
 // key={grid ? 'grid' : 'list'}
 // numColumns={grid ? 2 : 1}
 // columnWrapperStyle
 
-// ListEmptyComponent
 const List = () => {
   const [state, send] = useDirectory();
-  const { items, selected } = state.context;
+  const selected = [];
   const isSelecting = state.value === 'selecting';
   return (
     <View style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
       <FlatList
-        contentContainerStyle={{ paddingBottom: 50 }}
-        data={items}
+        contentContainerStyle={{ paddingBottom: 50, paddingTop: 5 }}
+        data={state.context.items}
         keyExtractor={item => item.id}
-        ListEmptyComponent={ListEmptyComponent}
+        ListEmptyComponent={() => (
+          <ListEmptyComponent
+            onAddFolder={() => send('addFolder')}
+            onAddMedia={() => send('addMedia')}
+          />
+        )}
         renderItem={({ item }) => <Item item={item} style={{ paddingHorizontal: 20 }} />}
         getItemLayout={(_data, index) => ({
           length: ITEM_HEIGHT,
@@ -86,7 +92,7 @@ const List = () => {
             name="trash"
             color="white"
             size={20}
-            onPress={() => send({ type: 'delete', id: selected })}
+            onPress={() => send('delete', { id: selected })}
           />
         </BulkActionsContainer>
       ) : (

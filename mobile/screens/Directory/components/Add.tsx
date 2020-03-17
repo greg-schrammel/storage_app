@@ -11,7 +11,7 @@ import BluryOverlay from 'components/BluryOverlay';
 import Button from 'components/Button';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
-import { ItemTypes } from './ListItem';
+import { useDirectory } from '../useDirectory';
 
 // function useCameraRoll({ first = 40, assetType = 'Photos' as const, groupTypes = 'All' as const }) {
 //   const [photos, setPhotos] = useState([]);
@@ -73,56 +73,37 @@ const AddFolder = ({ onCancel, onConfirm }) => {
   );
 };
 
-const reducer = (state, action) =>
-  ({
-    add: () => ({
-      state: 'adding',
-      what: action.what,
-    }),
-    cancel: () => ({
-      state: 'closed',
-    }),
-    open: () => ({
-      state: 'open',
-    }),
-  }[action.type]());
-
-type NewItem = { type: ItemTypes; name: string; contents?: string };
-
-interface AddItemProps {
-  onAdd: (item: NewItem) => void;
-}
-
-const AddItem = ({ onAdd }: AddItemProps) => {
-  const [{ state, what }, send] = useReducer(reducer, { state: 'closed' });
+const AddItem = () => {
+  const [isOpen, setOpen] = useState(false);
+  const [state, send] = useDirectory();
   return (
     <>
       <Popup
-        isOpen={state === 'open'}
-        onPressOutside={() => send({ type: 'cancel' })}
+        isOpen={isOpen}
+        onPressOutside={() => setOpen(false)}
         animationType="fade"
         blurIntensity={75}
         left
-        trigger={<Icon name="plus" onPress={() => send({ type: 'open' })} size={20} />}
+        trigger={<Icon name="plus" onPress={() => setOpen(true)} size={20} />}
         openTrigger={<Icon name="plus" size={20} />}
       >
         <MenuItem
-          onPress={() => send({ type: 'add', what: 'photo' })}
+          onPress={() => send('addMedia')}
           label="Adicionar da Galeria"
           icon="photo"
           iconSize={24}
         />
         <MenuItem
-          onPress={() => send({ type: 'add', what: 'folder' })}
+          onPress={() => send('addFolder')}
           label="Nova Pasta"
           icon="folder-o"
           iconSize={24}
         />
       </Popup>
-      {what === 'folder' && (
+      {state.matches('adding.folder') && (
         <AddFolder
-          onConfirm={opts => onAdd({ type: what, ...opts })}
-          onCancel={() => send({ type: 'cancel' })}
+          onConfirm={opts => send('add', { type: 'folder', ...opts })}
+          onCancel={() => send('cancel')}
         />
       )}
       {/* {what === 'from-camera-roll' && <AddFromCameraRoll />} */}
