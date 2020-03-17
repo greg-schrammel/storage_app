@@ -11,20 +11,21 @@ const Styles = StyleSheet.create({
     shadowColor: 'black',
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    // overflow: 'hidden',
   },
 });
 
-interface CardProps extends ViewProperties {
-  style: StyleProp<ViewStyle>;
+interface BoxProps extends ViewProperties {
+  style: StyleProp<ViewStyle> | Array<StyleProp<ViewStyle>>;
   children: React.ReactElement | Array<React.ReactElement>;
 }
 
-const Card = React.forwardRef(
-  ({ children, style, ...props }: CardProps, ref: React.RefObject<View>) => (
-    <View {...props} ref={ref} style={[Styles.container, style]}>
+const Box = React.forwardRef(
+  ({ children, style, ...props }: BoxProps, ref: React.RefObject<View>) => (
+    <View {...props} ref={ref} style={[Styles.container, style].flat()}>
       {children}
     </View>
   ),
 );
 
-export default Card;
+export default Box;

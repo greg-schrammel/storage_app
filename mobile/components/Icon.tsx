@@ -1,19 +1,28 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
+export type IconName =
+  | 'folder'
+  | 'folder-o'
+  | 'mp3'
+  | 'ellipsis-v'
+  | 'plus'
+  | 'search'
+  | 'user'
+  | 'star'
+  | 'photo'
+  | 'file-audio-o'
+  | 'file-photo-o'
+  | 'file-video-o'
+  | 'file-zip-o'
+  | 'file-o'
+  | 'arrow-down';
+
 interface IconProps {
-  name:
-    | 'folder'
-    | 'folder-o'
-    | 'mp3'
-    | 'ellipsis-v'
-    | 'plus'
-    | 'search'
-    | 'user'
-    | 'star'
-    | 'photo';
+  name: string | IconName;
   size?: number;
   color?: string;
   style?: StyleProp<ViewStyle>;
@@ -21,36 +30,33 @@ interface IconProps {
   _ref?: React.RefObject<TouchableOpacity>;
 }
 
-// TODO: make it beautiful
-const Icon = ({ name, size, color, style, onPress, _ref }: IconProps) => (
+const Icons = {
+  photo: ({ size, color }) => <FontAwesome name="photo" size={size - 2} color={color} />, // (?) this size is 2 larger
+  search: ({ size, color }) => <FontAwesome name="search" size={size - 2} color={color} />, // (?) this size is 2 larger
+};
+
+const Icon = ({ name, size, color, style, _ref }: IconProps) => {
+  const RawIcon = Icons[name] || (props => <FontAwesome name={name} {...props} />);
+  return (
+    <View
+      ref={_ref}
+      style={[style, { width: size, alignItems: 'center', justifyContent: 'center' }]}
+    >
+      <RawIcon size={size} color={color} />
+    </View>
+  );
+};
+
+const TouchableIcon = ({ onPress, _ref, ...props }: IconProps) => (
   <TouchableOpacity
-    activeOpacity={onPress ? 0.2 : 1}
     onPress={onPress}
     hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}
     ref={_ref}
   >
-    <View style={[style, { width: size, alignItems: 'center', justifyContent: 'center' }]}>
-      {{
-        folder: () => <FontAwesome name="folder" color={color || 'deepskyblue'} size={size} />,
-        'folder-o': () => <FontAwesome name="folder-o" color={color} size={size} />,
-        mp3: () => <FontAwesome name="music" color={color} size={size} />,
-        'ellipsis-v': () => <FontAwesome name="ellipsis-v" size={size} color={color} />,
-        plus: () => <FontAwesome name="plus" size={size} color={color} />,
-        search: () => <FontAwesome name="search" size={size} color={color} />,
-        user: () => <FontAwesome name="user" size={size} color={color} />,
-        star: () => <FontAwesome name="star" size={size} color={color} />,
-        photo: () => <FontAwesome name="photo" size={size - 2} color={color} />, // (?) this size is 2 larger
-        'i-cursor': () => <FontAwesome name="i-cursor" size={size} color={color} />,
-        'star-o': () => <FontAwesome name="star-o" size={size} color={color} />,
-        copy: () => <FontAwesome name="copy" size={size} color={color} />,
-        'trash-o': () => <FontAwesome name="trash-o" size={size} color={color} />,
-        'share-square-o': () => <FontAwesome name="share-square-o" size={size} color={color} />,
-      }[name]()}
-    </View>
+    <Icon {...props} />
   </TouchableOpacity>
 );
 
-export default forwardRef((props: IconProps, ref: React.RefObject<TouchableOpacity>) => (
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  <Icon _ref={ref} {...props} />
-));
+export default forwardRef((props: IconProps, ref: React.RefObject<TouchableOpacity>) =>
+  props.onPress ? <TouchableIcon _ref={ref} {...props} /> : <Icon _ref={ref} {...props} />,
+);

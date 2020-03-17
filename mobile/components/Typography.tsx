@@ -1,9 +1,13 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-  header: {
-    fontSize: 32,
+  largeHeader: {
+    fontSize: 30,
     fontWeight: '800',
+  },
+  header: {
+    fontWeight: '800',
+    fontSize: 20,
   },
   subheader: {
     fontSize: 16,
@@ -12,11 +16,9 @@ export default StyleSheet.create({
   caption: {
     fontSize: 12,
     fontWeight: '600',
-    color: 'silver',
   },
   caption2: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    color: 'silver',
   },
 });
