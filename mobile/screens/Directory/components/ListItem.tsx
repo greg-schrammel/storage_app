@@ -1,32 +1,18 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { useService } from '@xstate/react';
 
 import Icon from 'components/Icon';
 import Popup from 'components/Popup';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
-import { useDirectory } from '../useDirectory';
 
-export type ItemTypes = 'folder' | 'audio' | 'photo' | 'video' | 'file' | 'zip';
-
-export type uid = string;
-
-export interface Item {
-  id: uid;
-  name: string;
-  type: ItemTypes;
-  contents: Array<uid | null> | BinaryType;
-  meta: ItemMeta;
-}
-
-interface ItemMeta {
-  creationTime: number;
-  itemsCount?: number;
-}
+import { useDirectory } from '../DirectoryContext';
+import { ItemActor } from '../DirectoryMachine';
 
 interface ListItemProps {
-  item: Item;
+  itemActor: ItemActor;
   style: StyleProp<ViewStyle>;
 }
 
@@ -39,9 +25,6 @@ const ListItemPreview = {
   file: style => <Icon name="file-o" size={36} color="grey" style={style} />,
   zip: style => <Icon name="file-zip-o" size={36} color="grey" style={style} />,
 };
-
-export type ItemAction = 'copy' | 'share' | 'move' | 'rename' | 'delete' | 'addToFavorites';
-export type BulkAction = 'move' | 'delete';
 
 const Options = ({ onSelect }: { onSelect: (e: ItemAction) => void }) => {
   const [isOpen, setOpen] = useState(false);
@@ -90,24 +73,30 @@ const SelectBadge = ({ isSelected }) => (
 
 export const ITEM_HEIGHT = 60;
 
-const Item = ({ item: { id, name, type, meta }, style }: ListItemProps) => {
-  const [state, send] = useDirectory();
-  const isSelecting = state.matches('selecting');
+const ListItem = ({ itemActor, style }: ListItemProps) => {
+  const [directoryState, directorySend] = useDirectory();
+
+  const [state, send] = useService(itemActor);
+  const { id, name, type, meta } = state.context;
+
+  const isSelecting = directoryState.matches('selecting');
   const Preview = ListItemPreview[type] || ListItemPreview.file;
   return (
     <TouchableOpacity
       activeOpacity={isSelecting ? 1 : 0.2}
-      onPress={() => send({ type: 'open', item: id })}
+      onPress={() =>
+        isSelecting ? send('open', { item: id }) : directorySend('select', { item: id })
+      }
       style={[{ height: ITEM_HEIGHT, alignItems: 'center', flexDirection: 'row' }, style]}
     >
       <Preview />
-      {isSelecting && <SelectBadge isSelected={state.context.selected.includes(id)} />}
+      {isSelecting && <SelectBadge isSelected={[].includes(id)} />}
       <View style={{ flex: 1, marginLeft: 10 }}>
         <Text style={[Typography.subheader, { marginBottom: 2 }]}>{name}</Text>
         <Text style={[Typography.caption, { color: 'silver' }]}>
-          {/* type === 'folder' ? meta.itemsCount : */ `criado em ${new Date(
-            meta.creationTime,
-          ).toLocaleDateString()}`}
+          {type === 'folder'
+            ? `${meta.itemsCount || 0} items`
+            : `criado em ${new Date(meta.creationTime).toLocaleDateString()}`}
         </Text>
       </View>
       <Options onSelect={action => send({ type: action, item: id })} />
@@ -115,4 +104,4 @@ const Item = ({ item: { id, name, type, meta }, style }: ListItemProps) => {
   );
 };
 
-export default Item;
+export default ListItem;

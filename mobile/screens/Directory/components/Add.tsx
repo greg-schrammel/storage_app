@@ -11,7 +11,8 @@ import BluryOverlay from 'components/BluryOverlay';
 import Button from 'components/Button';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
-import { useDirectory } from '../useDirectory';
+
+import { useDirectory } from '../DirectoryContext';
 
 // function useCameraRoll({ first = 40, assetType = 'Photos' as const, groupTypes = 'All' as const }) {
 //   const [photos, setPhotos] = useState([]);

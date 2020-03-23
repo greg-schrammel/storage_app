@@ -5,8 +5,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'components/Icon';
 import Typography from 'components/Typography';
 
-import Item, { ITEM_HEIGHT } from './ListItem';
-import { useDirectory } from '../useDirectory';
+import { useDirectory } from '../DirectoryContext';
+
+import ListItem, { ITEM_HEIGHT } from './ListItem';
 
 const BulkActionsContainer = ({ children }) => (
   <View
@@ -65,12 +66,12 @@ const ListEmptyComponent = ({ onAddFolder, onAddMedia }) => (
 const List = () => {
   const [state, send] = useDirectory();
   const selected = [];
-  const isSelecting = state.value === 'selecting';
+  const isSelecting = state.matches('selecting');
   return (
     <View style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
       <FlatList
         contentContainerStyle={{ paddingBottom: 50, paddingTop: 5 }}
-        data={state.context.items}
+        data={state.context.data}
         keyExtractor={item => item.id}
         ListEmptyComponent={() => (
           <ListEmptyComponent
@@ -78,7 +79,7 @@ const List = () => {
             onAddMedia={() => send('addMedia')}
           />
         )}
-        renderItem={({ item }) => <Item item={item} style={{ paddingHorizontal: 20 }} />}
+        renderItem={({ item }) => <ListItem itemActor={item} style={{ paddingHorizontal: 20 }} />}
         getItemLayout={(_data, index) => ({
           length: ITEM_HEIGHT,
           offset: ITEM_HEIGHT * index,

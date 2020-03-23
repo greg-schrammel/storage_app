@@ -7,7 +7,7 @@ import Input from 'components/Input';
 import Button from 'components/Button';
 
 import SortBy from './SortBy';
-import { useDirectory } from '../useDirectory';
+import { useDirectory } from '../DirectoryContext';
 
 const SelectButton = ({ onPress, isSelecting }) => (
   <Button
