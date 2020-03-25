@@ -4,7 +4,7 @@ export interface Item {
   id: string;
   name: string;
   type: ItemTypes;
-  contents: Array<uid | null> | BinaryType;
+  contents: Array<string | null> | BinaryType;
   meta: ItemMeta;
 }
 

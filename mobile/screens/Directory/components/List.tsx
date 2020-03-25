@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 
 import Icon from 'components/Icon';
 import Typography from 'components/Typography';
 
-import { useDirectory } from '../DirectoryContext';
+import Button from 'components/Button';
+import { useDirectory, useBulkService } from '../DirectoryContext';
 
 import ListItem, { ITEM_HEIGHT } from './ListItem';
 
@@ -64,8 +64,8 @@ const ListEmptyComponent = ({ onAddFolder, onAddMedia }) => (
 // columnWrapperStyle
 
 const List = () => {
-  const [state, send] = useDirectory();
-  const selected = [];
+  const [state, send, services] = useDirectory();
+  const [selected, sendBulk] = useBulkService(services);
   const isSelecting = state.matches('selecting');
   return (
     <View style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
@@ -73,35 +73,35 @@ const List = () => {
         contentContainerStyle={{ paddingBottom: 50, paddingTop: 5 }}
         data={state.context.data}
         keyExtractor={item => item.id}
-        ListEmptyComponent={() => (
-          <ListEmptyComponent
-            onAddFolder={() => send('addFolder')}
-            onAddMedia={() => send('addMedia')}
+        ListEmptyComponent={() =>
+          state.matches('loading') ? null : (
+            <ListEmptyComponent
+              onAddFolder={() => send('addFolder')}
+              onAddMedia={() => send('addMedia')}
+            />
+          )
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            isSelecting={isSelecting}
+            isSelected={selected.includes(item.id)}
+            itemActor={item.ref}
+            style={{ paddingHorizontal: 20 }}
           />
         )}
-        renderItem={({ item }) => <ListItem itemActor={item} style={{ paddingHorizontal: 20 }} />}
         getItemLayout={(_data, index) => ({
           length: ITEM_HEIGHT,
           offset: ITEM_HEIGHT * index,
           index,
         })}
       />
-      {isSelecting && !!selected.length ? (
+      {isSelecting && !!selected.length && (
         <BulkActionsContainer>
-          <Text style={[Typography.caption2, { color: 'white' }]}>Mover Todos</Text>
-          <Icon
-            name="trash"
-            color="white"
-            size={20}
-            onPress={() => send('delete', { id: selected })}
-          />
+          <Button color="white" onPress={() => sendBulk('move')}>
+            Mover Todos
+          </Button>
+          <Icon name="trash" color="white" size={20} onPress={() => sendBulk('delete')} />
         </BulkActionsContainer>
-      ) : (
-        <LinearGradient
-          style={{ position: 'absolute', bottom: 0, width: '100%', height: 30 }}
-          colors={['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 1)']}
-          pointerEvents="none"
-        />
       )}
     </View>
   );

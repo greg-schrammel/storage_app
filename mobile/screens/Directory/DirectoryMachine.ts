@@ -1,14 +1,4 @@
-import {
-  Machine,
-  assign,
-  send,
-  State,
-  Interpreter,
-  createMachine,
-  spawn,
-  Actor,
-  forwardTo,
-} from 'xstate';
+import { Machine, assign, State, Interpreter, createMachine, spawn, Actor } from 'xstate';
 
 import { Item } from '@types/item';
 import { listenFolder, fetchItemContents } from 'services/directory';
@@ -35,15 +25,18 @@ const SearchMachine = Machine<{ search: string }, SearchEvent>({
   },
 });
 
-type BulkEvents =
+type ConfirmationEvent = { type: 'confirm' } | { type: 'cancel' };
+type BulkActionEvent =
   | { type: 'select'; id: Item['id'] }
   | { type: 'delete'; id: Item['id'] }
   | { type: 'move'; id: Item['id'] };
+type BulkEvent = BulkActionEvent | ConfirmationEvent;
 interface BulkActionsContext {
   selected: Array<string>;
 }
+export type BulkInterpreter = Interpreter<BulkActionsContext, {}, BulkEvent>;
 
-const BulkActionsMachine = Machine<BulkActionsContext, BulkEvents>(
+const BulkActionsMachine = Machine<BulkActionsContext, BulkEvent>(
   {
     id: 'bulk',
     initial: 'selecting',
@@ -56,25 +49,50 @@ const BulkActionsMachine = Machine<BulkActionsContext, BulkEvents>(
           select: {
             actions: 'select',
           },
+          delete: 'deleting',
+          move: 'moving',
         },
       },
-      done: {},
+      deleting: {
+        on: {
+          confirm: {
+            target: 'end',
+            actions: 'delete',
+          },
+        },
+      },
+      // movingMachine? (can't move to inside itself)
+      moving: {
+        on: {
+          confirm: {
+            target: 'end',
+            actions: 'move',
+          },
+        },
+      },
+      end: {},
+    },
+    on: {
+      cancel: 'seleting',
     },
   },
   {
     actions: {
       select: assign({
-        selected: (ctx, e) =>
+        selected: (ctx, e: BulkActionEvent) =>
           ctx.selected.includes(e.id)
             ? ctx.selected.filter(i => i !== e.id)
             : [...ctx.selected, e.id],
       }),
     },
+    // delete: ctx => deleteItems(ctx.seleted),
+    // move: (ctx, e) => moveItems(e.to, ctx.selected)
   },
 );
 
 export type ItemEvent = { type: 'rename' } | { type: 'changeName'; name: string };
 export type ItemAction = 'copy' | 'share' | 'move' | 'rename' | 'delete' | 'addToFavorites';
+export type ItemActor = Actor<Item, ItemEvent> | Interpreter<Item>;
 
 const ItemMachine = createMachine<Item, ItemEvent>(
   {
@@ -155,23 +173,22 @@ export type DirectoryEvent =
   | { type: 'addMedia' }
   | UpdateDataEvent
   | SearchEvent
-  | BulkEvents;
+  | BulkEvent;
 
-export type ItemActor = Actor<Item, ItemEvent> | Interpreter<Item>;
 interface DirectoryContext {
-  folder: Item['id'] | null;
-  data?: Array<ItemActor>;
+  folder: Item['id'];
+  data?: Array<{ id: Item['id']; ref: ItemActor }>;
   sortBy: SortByKeys;
 }
 
-const DirectoryMachine = createMachine<DirectoryContext, DirectoryEvent>(
+const DirectoryMachine = Machine<DirectoryContext, DirectoryEvent>(
   {
     id: 'directory',
     initial: 'loading',
     context: {
-      folder: null,
+      folder: 'root',
       data: [],
-      sortBy: 'name',
+      sortBy: 'name' as SortByKeys,
     },
     invoke: {
       src: 'listenFolder',
@@ -195,9 +212,7 @@ const DirectoryMachine = createMachine<DirectoryContext, DirectoryEvent>(
       },
       selecting: {
         invoke: {
-          id: 'bulk',
           src: BulkActionsMachine,
-          autoForward: true,
           onDone: 'idle',
         },
         on: {
@@ -241,11 +256,14 @@ const DirectoryMachine = createMachine<DirectoryContext, DirectoryEvent>(
   {
     actions: {
       sort: (ctx, e) => null, // assign({ items: ctx.items.sort() }),
-      addItem: (ctx, e) => null, // add e (item) to ctx.data,
+      addItem: (ctx, e) => null, // add e (item) to db and machine listen from db,
       updateData: assign({
-        data: (ctx, e) => [
+        data: (ctx, e: UpdateDataEvent) => [
           ...ctx.data,
-          ...e.data.map(item => spawn(ItemMachine.withContext(item), { name: item.id })),
+          ...e.data.map(item => ({
+            id: item.id,
+            ref: spawn(ItemMachine.withContext(item), item.id),
+          })),
         ],
       }),
     },

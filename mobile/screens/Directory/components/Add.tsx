@@ -12,8 +12,6 @@ import Button from 'components/Button';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
 
-import { useDirectory } from '../DirectoryContext';
-
 // function useCameraRoll({ first = 40, assetType = 'Photos' as const, groupTypes = 'All' as const }) {
 //   const [photos, setPhotos] = useState([]);
 //   const [after, setAfter] = useState(null);
@@ -34,7 +32,7 @@ import { useDirectory } from '../DirectoryContext';
 //   return [photos, getPhotos];
 // }
 
-const AddFolder = ({ onCancel, onConfirm }) => {
+export const AddFolder = ({ onCancel, onConfirm }) => {
   const [name, setName] = useState('');
   return (
     <BluryOverlay
@@ -65,7 +63,11 @@ const AddFolder = ({ onCancel, onConfirm }) => {
           <Button onPress={onCancel} color="dodgerblue">
             Cancelar
           </Button>
-          <Button onPress={() => onConfirm({ name })} backgroundColor="dodgerblue" color="white">
+          <Button
+            onPress={() => onConfirm({ type: 'folder', name })}
+            backgroundColor="dodgerblue"
+            color="white"
+          >
             Adicionar
           </Button>
         </View>
@@ -74,41 +76,21 @@ const AddFolder = ({ onCancel, onConfirm }) => {
   );
 };
 
-const AddItem = () => {
+const AddItem = ({ onAddMedia, onAddFolder }) => {
   const [isOpen, setOpen] = useState(false);
-  const [state, send] = useDirectory();
   return (
-    <>
-      <Popup
-        isOpen={isOpen}
-        onPressOutside={() => setOpen(false)}
-        animationType="fade"
-        blurIntensity={75}
-        left
-        trigger={<Icon name="plus" onPress={() => setOpen(true)} size={20} />}
-        openTrigger={<Icon name="plus" size={20} />}
-      >
-        <MenuItem
-          onPress={() => send('addMedia')}
-          label="Adicionar da Galeria"
-          icon="photo"
-          iconSize={24}
-        />
-        <MenuItem
-          onPress={() => send('addFolder')}
-          label="Nova Pasta"
-          icon="folder-o"
-          iconSize={24}
-        />
-      </Popup>
-      {state.matches('adding.folder') && (
-        <AddFolder
-          onConfirm={opts => send('add', { type: 'folder', ...opts })}
-          onCancel={() => send('cancel')}
-        />
-      )}
-      {/* {what === 'from-camera-roll' && <AddFromCameraRoll />} */}
-    </>
+    <Popup
+      isOpen={isOpen}
+      onPressOutside={() => setOpen(false)}
+      animationType="fade"
+      blurIntensity={75}
+      left
+      trigger={<Icon name="plus" onPress={() => setOpen(true)} size={20} />}
+      openTrigger={<Icon name="plus" size={20} />}
+    >
+      <MenuItem onPress={onAddMedia} label="Adicionar da Galeria" icon="photo" iconSize={24} />
+      <MenuItem onPress={onAddFolder} label="Nova Pasta" icon="folder-o" iconSize={24} />
+    </Popup>
   );
 };
 

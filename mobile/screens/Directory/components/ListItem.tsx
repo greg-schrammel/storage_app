@@ -8,12 +8,15 @@ import Popup from 'components/Popup';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
 
-import { useDirectory } from '../DirectoryContext';
-import { ItemActor } from '../DirectoryMachine';
+import { Interpreter } from 'xstate';
+import { Item } from '@types/item';
+import { ItemActor, ItemAction } from '../DirectoryMachine';
 
 interface ListItemProps {
   itemActor: ItemActor;
   style: StyleProp<ViewStyle>;
+  isSelected: boolean;
+  isSelecting: boolean;
 }
 
 const ListItemPreview = {
@@ -73,24 +76,19 @@ const SelectBadge = ({ isSelected }) => (
 
 export const ITEM_HEIGHT = 60;
 
-const ListItem = ({ itemActor, style }: ListItemProps) => {
-  const [directoryState, directorySend] = useDirectory();
+const ListItem = ({ itemActor, isSelecting, isSelected, style }: ListItemProps) => {
+  const [state, send] = useService(itemActor as Interpreter<Item>);
+  const { name, type, meta } = state.context;
 
-  const [state, send] = useService(itemActor);
-  const { id, name, type, meta } = state.context;
-
-  const isSelecting = directoryState.matches('selecting');
   const Preview = ListItemPreview[type] || ListItemPreview.file;
   return (
     <TouchableOpacity
       activeOpacity={isSelecting ? 1 : 0.2}
-      onPress={() =>
-        isSelecting ? send('open', { item: id }) : directorySend('select', { item: id })
-      }
+      onPress={() => send('press')}
       style={[{ height: ITEM_HEIGHT, alignItems: 'center', flexDirection: 'row' }, style]}
     >
       <Preview />
-      {isSelecting && <SelectBadge isSelected={[].includes(id)} />}
+      {isSelecting && <SelectBadge isSelected={isSelected} />}
       <View style={{ flex: 1, marginLeft: 10 }}>
         <Text style={[Typography.subheader, { marginBottom: 2 }]}>{name}</Text>
         <Text style={[Typography.caption, { color: 'silver' }]}>
@@ -99,7 +97,7 @@ const ListItem = ({ itemActor, style }: ListItemProps) => {
             : `criado em ${new Date(meta.creationTime).toLocaleDateString()}`}
         </Text>
       </View>
-      <Options onSelect={action => send({ type: action, item: id })} />
+      <Options onSelect={action => send(action)} />
     </TouchableOpacity>
   );
 };

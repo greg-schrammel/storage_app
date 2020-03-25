@@ -1,42 +1,79 @@
-import React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import * as React from 'react';
+import { View } from 'react-native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
+import Icon from 'components/Icon';
 import DirectoryScreen from 'screens/Directory';
-// import Icon from 'components/Icon';
 
-// const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
-// const TabIcon = {
-//   files: 'folder',
-//   config: 'user',
-//   favorites: 'star',
-// };
+const routeIcon = {
+  directory: 'folder',
+  shared: 'users',
+  favorites: 'star',
+  config: 'user',
+};
 
-// function App() {
-//   return (
-//     <NavigationContainer>
-//       <Tab.Navigator
-//         screenOptions={({ route }) => ({
-//           tabBarIcon: ({ color }) => <Icon name={TabIcon[route.name]} color={color} size={22} />,
-//           tabBarLabel: route.name,
-//         })}
-//         tabBarOptions={{
-//           activeTintColor: 'dodgerblue',
-//           inactiveTintColor: 'grey',
-//         }}
-//         initialRouteName="files"
-//       >
-//         <Tab.Screen name="favorites" component={DirectoryScreen} />
-//         <Tab.Screen name="files" component={DirectoryScreen} />
-//         <Tab.Screen name="config" component={DirectoryScreen} />
-//       </Tab.Navigator>
-//     </NavigationContainer>
-//   );
-// }
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'white',
+    border: 'lightgrey',
+  },
+};
 
-function App() {
-  return <DirectoryScreen />;
+export default function App() {
+  return (
+    <NavigationContainer theme={navigationTheme}>
+      <Tab.Navigator
+        initialRouteName="shared"
+        screenOptions={({ route }) => ({
+          tabBarLabel: route.name,
+          tabBarIcon: ({ color }) => <Icon name={routeIcon[route.name]} size={22} color={color} />,
+        })}
+        tabBarOptions={{
+          activeTintColor: 'dodgerblue',
+          inactiveTintColor: 'darkgray',
+        }}
+      >
+        <Tab.Screen
+          options={{ tabBarLabel: 'favorites' }}
+          name="favorites"
+          component={DirectoryScreen}
+        />
+        <Tab.Screen options={{ tabBarLabel: 'shared' }} name="shared" component={DirectoryScreen} />
+        <Tab.Screen
+          options={{ tabBarLabel: 'directory' }}
+          name="directory"
+          component={DirectoryScreen}
+        />
+        <Tab.Screen options={{ tabBarLabel: 'config' }} name="config" component={DirectoryScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
 }
 
-export default App;
+// const Tab = ({ icon, label, active = false, color = active ? 'dodgerblue' : 'darkgrey' }) => (
+//   <View style={{ alignItems: 'center' }}>
+//     <Icon name={icon} size={24} color={color} />
+//     <Text style={[Typography.caption, { color, fontSize: 10, padding: 5 }]}>{label}</Text>
+//   </View>
+// );
+
+// <View
+// style={{
+//   flexDirection: 'row',
+//   justifyContent: 'space-around',
+//   alignItems: 'center',
+//   paddingTop: 10,
+//   borderTopColor: 'whitesmoke',
+//   borderTopWidth: 1,
+// }}
+// >
+// <Tab icon="star" label="Favoritos" />
+// <Tab icon="users" label="Compartilhados" />
+// <Tab icon="folder" label="Arquivos" active />
+// <Tab icon="user" label="Configurações" />
+// </View>

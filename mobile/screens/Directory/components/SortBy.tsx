@@ -29,7 +29,7 @@ const SortBy = ({ style, by, direction, onValue }: SortByProps) => {
             hitSlop={{ top: 20, right: 40, bottom: 20, left: 40 }}
             onPress={() => setOpen(true)}
           >
-            <Text style={[Typography.caption, { paddingRight: 3 }]}>Nome</Text>
+            <Text style={[Typography.caption, { paddingRight: 3 }]}>{by}</Text>
             <Icon name={`arrow-${direction}`} size={10} color="lightgrey" />
           </TouchableOpacity>
         }
