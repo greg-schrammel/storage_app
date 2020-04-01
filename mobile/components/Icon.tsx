@@ -47,11 +47,12 @@ const Icon = ({ name, size, color, style, _ref }: IconProps) => {
   );
 };
 
-const TouchableIcon = ({ onPress, _ref, ...props }: IconProps) => (
+const TouchableIcon = ({ onPress, _ref, style, ...props }: IconProps) => (
   <TouchableOpacity
     onPress={onPress}
     hitSlop={{ top: 30, bottom: 30, left: 30, right: 30 }}
     ref={_ref}
+    style={style}
   >
     <Icon {...props} />
   </TouchableOpacity>

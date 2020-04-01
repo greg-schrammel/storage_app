@@ -21,4 +21,7 @@ export default StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  body: {
+    fontSize: 16,
+  },
 });

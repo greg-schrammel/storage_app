@@ -24,7 +24,12 @@ interface ButtonProps {
 
 const Button = ({ children, onPress, style, size = 'md', color, backgroundColor }: ButtonProps) => (
   <TouchableOpacity onPress={onPress} style={[Styles.button, style, { backgroundColor }]}>
-    <Text style={[size === 'md' ? Typography.caption2 : Typography.caption, { color }]}>
+    <Text
+      style={[
+        size === 'md' ? Typography.caption2 : Typography.caption,
+        { color, fontWeight: '500' },
+      ]}
+    >
       {children}
     </Text>
   </TouchableOpacity>

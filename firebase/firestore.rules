@@ -1,0 +1,47 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /users/{userId} {
+      allow read, write: if authUserId() == userId;
+    }
+
+    match /items/{itemId} {
+      allow read, write: if isOwner();
+      match /contents {
+        allow read: if canReadContent(itemId);
+        allow write: if canWriteContent(itemId);
+      }
+      match /name {
+        allow read: if canReadContent(itemId);
+        allow write: if canWriteContent(itemId);
+      }
+    }
+
+
+    // Item
+    function getItem(itemId) {
+      return getData('items', itemId);
+    }
+    function isOwner(itemId) {
+      return authUserId() == getItem(itemId).owner;
+    }
+    function canReadContent(itemId) {
+      return isOwner(itemId) || authUserId() in getItem(itemId).permissions.read
+    }
+    function canWriteContent(itemId) {
+      return isOwner(itemId) || authUserId() in getItem(itemId).permissions.write
+    }
+
+    // Util
+    function getData(collection, documentId) {
+      return get(/databases/$(database)/documents/$(collection)/$(documentId)).data;
+    }
+    function authUserId() {
+      return request.auth != null && request.auth.uid
+    }
+  }
+}

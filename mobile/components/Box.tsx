@@ -16,7 +16,7 @@ const Styles = StyleSheet.create({
 });
 
 interface BoxProps extends ViewProperties {
-  style: StyleProp<ViewStyle> | Array<StyleProp<ViewStyle>>;
+  style?: StyleProp<ViewStyle> | Array<StyleProp<ViewStyle>>;
   children: React.ReactElement | Array<React.ReactElement>;
 }
 
