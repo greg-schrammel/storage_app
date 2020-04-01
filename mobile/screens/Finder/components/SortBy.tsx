@@ -16,7 +16,11 @@ interface SortByProps {
 
 export type SortByKeys = 'name' | 'creationTime' | 'fileType';
 
+<<<<<<< Updated upstream
 const SortBy = ({ style, by, direction, onValue }: SortByProps) => {
+=======
+const SortBy = ({ style, by, direction, onValue, disabled }: SortByProps) => {
+>>>>>>> Stashed changes
   const [isOpen, setOpen] = useState(false);
   return (
     <View style={[style, { marginTop: 5, width: 70 }]}>

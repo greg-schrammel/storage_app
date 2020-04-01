@@ -10,6 +10,7 @@ import Typography from 'components/Typography';
 
 import { Interpreter } from 'xstate';
 import { Item } from '@types/item';
+<<<<<<< Updated upstream
 import { ItemActor, ItemAction } from '../DirectoryMachine';
 
 interface ListItemProps {
@@ -17,6 +18,14 @@ interface ListItemProps {
   style: StyleProp<ViewStyle>;
   isSelected: boolean;
   isSelecting: boolean;
+=======
+import { FileActor, FileAction } from '../FileMachine';
+
+interface ListItemProps {
+  actor: FileActor;
+  style: StyleProp<ViewStyle>;
+  showSelector: boolean;
+>>>>>>> Stashed changes
 }
 
 const ListItemPreview = {
@@ -29,7 +38,11 @@ const ListItemPreview = {
   zip: style => <Icon name="file-zip-o" size={36} color="grey" style={style} />,
 };
 
+<<<<<<< Updated upstream
 const Options = ({ onSelect }: { onSelect: (e: ItemAction) => void }) => {
+=======
+const Options = ({ onSelect }: { onSelect: (e: FileAction) => void }) => {
+>>>>>>> Stashed changes
   const [isOpen, setOpen] = useState(false);
   return (
     <Popup
@@ -76,19 +89,33 @@ const SelectBadge = ({ isSelected }) => (
 
 export const ITEM_HEIGHT = 60;
 
+<<<<<<< Updated upstream
 const ListItem = ({ itemActor, isSelecting, isSelected, style }: ListItemProps) => {
   const [state, send] = useService(itemActor as Interpreter<Item>);
+=======
+const FileListItem = ({ actor, showSelector, style }: ListItemProps) => {
+  const [state, send] = useService(actor as Interpreter<Item>);
+>>>>>>> Stashed changes
   const { name, type, meta } = state.context;
 
   const Preview = ListItemPreview[type] || ListItemPreview.file;
   return (
     <TouchableOpacity
+<<<<<<< Updated upstream
       activeOpacity={isSelecting ? 1 : 0.2}
       onPress={() => send('press')}
       style={[{ height: ITEM_HEIGHT, alignItems: 'center', flexDirection: 'row' }, style]}
     >
       <Preview />
       {isSelecting && <SelectBadge isSelected={isSelected} />}
+=======
+      activeOpacity={showSelector ? 1 : 0.2}
+      onPress={() => (showSelector ? send('select') : send('open'))}
+      style={[{ height: ITEM_HEIGHT, alignItems: 'center', flexDirection: 'row' }, style]}
+    >
+      <Preview />
+      {showSelector && <SelectBadge isSelected={state.matches('selected')} />}
+>>>>>>> Stashed changes
       <View style={{ flex: 1, marginLeft: 10 }}>
         <Text style={[Typography.subheader, { marginBottom: 2 }]}>{name}</Text>
         <Text style={[Typography.caption, { color: 'silver' }]}>
@@ -102,4 +129,8 @@ const ListItem = ({ itemActor, isSelecting, isSelected, style }: ListItemProps) 
   );
 };
 
+<<<<<<< Updated upstream
 export default ListItem;
+=======
+export default FileListItem;
+>>>>>>> Stashed changes

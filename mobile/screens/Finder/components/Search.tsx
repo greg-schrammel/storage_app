@@ -4,7 +4,11 @@ import { Keyboard, SafeAreaView, View, Text } from 'react-native';
 
 import { statusBarHeight } from 'expo-constants';
 
+<<<<<<< Updated upstream
+import AddItem from 'screens/Finder/components/Add';
+=======
 import AddItem from 'screens/Directory/components/Add';
+>>>>>>> Stashed changes
 import List from 'screens/Directory/components/List';
 
 import Input from 'components/Input';

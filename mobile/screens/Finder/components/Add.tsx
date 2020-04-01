@@ -5,12 +5,16 @@ import * as MediaLibrary from 'expo-media-library';
 
 import Icon from 'components/Icon';
 import Popup from 'components/Popup';
+<<<<<<< Updated upstream
 import Input from 'components/Input';
 import Box from 'components/Box';
 import BluryOverlay from 'components/BluryOverlay';
 import Button from 'components/Button';
 import MenuItem from 'components/MenuItem';
 import Typography from 'components/Typography';
+=======
+import MenuItem from 'components/MenuItem';
+>>>>>>> Stashed changes
 
 // function useCameraRoll({ first = 40, assetType = 'Photos' as const, groupTypes = 'All' as const }) {
 //   const [photos, setPhotos] = useState([]);
@@ -32,6 +36,7 @@ import Typography from 'components/Typography';
 //   return [photos, getPhotos];
 // }
 
+<<<<<<< Updated upstream
 export const AddFolder = ({ onCancel, onConfirm }) => {
   const [name, setName] = useState('');
   return (
@@ -75,6 +80,9 @@ export const AddFolder = ({ onCancel, onConfirm }) => {
     </BluryOverlay>
   );
 };
+=======
+const AddButton = ({ onPress = undefined }) => <Icon name="plus" onPress={onPress} size={20} />;
+>>>>>>> Stashed changes
 
 const AddItem = ({ onAddMedia, onAddFolder }) => {
   const [isOpen, setOpen] = useState(false);
@@ -85,8 +93,13 @@ const AddItem = ({ onAddMedia, onAddFolder }) => {
       animationType="fade"
       blurIntensity={75}
       left
+<<<<<<< Updated upstream
       trigger={<Icon name="plus" onPress={() => setOpen(true)} size={20} />}
       openTrigger={<Icon name="plus" size={20} />}
+=======
+      trigger={<AddButton onPress={() => setOpen(true)} />}
+      openTrigger={<AddButton />}
+>>>>>>> Stashed changes
     >
       <MenuItem onPress={onAddMedia} label="Adicionar da Galeria" icon="photo" iconSize={24} />
       <MenuItem onPress={onAddFolder} label="Nova Pasta" icon="folder-o" iconSize={24} />
