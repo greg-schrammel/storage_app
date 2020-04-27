@@ -4,16 +4,12 @@ import { Keyboard, SafeAreaView, View, Text } from 'react-native';
 
 import { statusBarHeight } from 'expo-constants';
 
-<<<<<<< Updated upstream
 import AddItem from 'screens/Finder/components/Add';
-=======
-import AddItem from 'screens/Directory/components/Add';
->>>>>>> Stashed changes
-import List from 'screens/Directory/components/List';
+import List from 'screens/Finder/components/List';
 
 import Input from 'components/Input';
 import Icon from 'components/Icon';
-import BluryOverlay from 'components/BluryOverlay';
+import BluryOverlay from 'screens/Finder/modals/Adding/node_modules/components/BluryOverlay';
 import Box from 'components/Box';
 import Typography from 'components/Typography';
 import Logo from 'components/Logo';

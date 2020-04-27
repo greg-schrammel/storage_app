@@ -16,35 +16,36 @@ export const FileMachine = Machine<Item, FileEvent>(
     id: 'file',
     type: 'parallel',
     states: {
-      editing: {
+      listing: {
         initial: 'idle',
         states: {
           idle: {
             on: {
-              rename: 'renaming',
-              // select: {
-              //   target: 'selected',
-              //   actions: ctx => send('select', { to: 'edit', id: ctx.id }),
-              // },
+              selecting: 'selecting',
             },
           },
-          selected: {
-            // on: {
-            //   select: {
-            //     target: 'idle',
-            //     actions: ctx => send('deselect', { to: 'edit', id: ctx.id }),
-            //   },
-            // },
-          },
-          renaming: {
+          selecting: {
+            initial: 'notSelected',
             on: {
-              changeName: {
-                actions: (ctx, e) => [assign({ ...ctx, name: e.name })],
+              cancel: 'idle',
+            },
+            states: {
+              notSelected: {
+                on: {
+                  select: {
+                    target: 'selected',
+                  },
+                },
+              },
+              selected: {
+                on: {
+                  select: {
+                    target: 'notSelected',
+                  },
+                },
               },
             },
           },
-          moving: {},
-          deleting: {},
         },
       },
       network: {
@@ -74,7 +75,44 @@ export const FileMachine = Machine<Item, FileEvent>(
               },
             },
           },
-          ready: {},
+          ready: {
+            initial: 'idle',
+            states: {
+              idle: {
+                on: {
+                  view: 'viewing',
+                },
+              },
+              viewing: {
+                states: {
+                  idle: {
+                    on: {
+                      edit: 'editing',
+                    },
+                  },
+                  editing: {
+                    initial: 'idle',
+                    states: {
+                      idle: {
+                        on: {
+                          rename: '',
+                        },
+                      },
+                      renaming: {
+                        on: {
+                          changeName: {
+                            actions: (ctx, e) => [assign({ ...ctx, name: e.name })],
+                          },
+                        },
+                      },
+                      moving: {},
+                      deleting: {},
+                    },
+                  },
+                },
+              },
+            },
+          },
           unloaded: {},
         },
       },

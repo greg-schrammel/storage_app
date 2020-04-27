@@ -1,110 +1,55 @@
 import * as React from 'react';
 
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 
 import Typography from 'components/Typography';
 import Input from 'components/Input';
-<<<<<<< Updated upstream
-import Button from 'components/Button';
 
-import SortBy from './SortBy';
-import { useDirectory } from '../DirectoryContext';
+import SortBy from './Sort';
+import { useFinder } from '../FinderProvider';
 
-const SelectButton = ({ onPress, isSelecting }) => (
-  <Button
-    onPress={onPress}
-    style={{
-      borderRadius: 30,
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    }}
-    size="sm"
-    color="dodgerblue"
-    backgroundColor="#e9f7ff"
-  >
-    {!isSelecting ? 'Selecionar' : 'Cancelar'}
-  </Button>
-);
-=======
+const Styles = StyleSheet.create({
+  container: {
+    paddingBottom: 5,
+    paddingHorizontal: 20,
+    borderColor: 'whitesmoke',
+    borderBottomWidth: 1,
+  },
+});
 
-import SortBy from './SortBy';
-import { useFinder } from '../FinderContext';
+const SEARCH_HEIGHT = 36;
+const searchInputInterpolation = (listScrollY, outputRange) =>
+  listScrollY.interpolate({
+    inputRange: [0, 36, 150],
+    outputRange,
+    extrapolate: 'clamp',
+  });
 
-// const SelectButton = ({ onPress, isSelecting }) => (
-//   <Button
-//     onPress={onPress}
-//     style={{
-//       borderRadius: 30,
-//       paddingHorizontal: 10,
-//       paddingVertical: 5,
-//     }}
-//     size="sm"
-//     color="dodgerblue"
-//     backgroundColor="#e9f7ff"
-//   >
-//     {!isSelecting ? 'Selecionar' : 'Cancelar'}
-//   </Button>
-// );
->>>>>>> Stashed changes
-
-const HeaderContainer = ({ children }) => (
-  <View
-    style={[
-      {
-        paddingBottom: 5,
-        paddingHorizontal: 20,
-        borderBottomWidth: 1,
-        borderBottomColor: 'whitesmoke',
-      },
-    ]}
-  >
-    {children}
-  </View>
-);
-
-const Header = () => {
-<<<<<<< Updated upstream
-  const [state, send] = useDirectory();
-=======
+const Header = ({ listScrollY }: { listScrollY: Animated.Value }) => {
   const [state, send] = useFinder();
->>>>>>> Stashed changes
   return (
-    <>
-      <HeaderContainer>
-        <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <Text style={Typography.largeHeader}>Meus Arquivos</Text>
-<<<<<<< Updated upstream
-          <SelectButton
-            isSelecting={state.matches('selecting')}
-            onPress={() => send('toggleSelecting')}
-          />
-        </View>
-        <Input
-=======
-        </View>
-        <Input
-          disabled={state.matches('noData')}
->>>>>>> Stashed changes
-          onFocus={() => send('search')}
-          onChangeText={search => send({ type: 'searchChange', search })}
-          placeholder="Pesquisar"
-          icon="search"
-          style={{ marginTop: 10 }}
-        />
-        <SortBy
-<<<<<<< Updated upstream
-=======
-          disabled={state.matches('noData')}
->>>>>>> Stashed changes
-          onValue={by => send({ type: 'sort', by })}
-          by={state.context.sortBy}
-          direction="down"
-          style={{ marginTop: 10 }}
-        />
-      </HeaderContainer>
-    </>
+    <View style={Styles.container}>
+      <Text style={[Typography.largeHeader]}>Meus Arquivos</Text>
+      <Input
+        disabled={state.matches('noFiles')}
+        onFocus={() => send('search')}
+        onChangeText={search => send({ type: 'searchChange', search })}
+        placeholder="Pesquisar"
+        icon="search"
+        style={{
+          height: searchInputInterpolation(listScrollY, [SEARCH_HEIGHT, SEARCH_HEIGHT, 0]),
+          opacity: searchInputInterpolation(listScrollY, [1, 1, 0]),
+          paddingVertical: searchInputInterpolation(listScrollY, [8, 8, 0]),
+          marginVertical: searchInputInterpolation(listScrollY, [10, 10, 5]),
+        }}
+      />
+      <SortBy
+        disabled={state.matches('noFiles')}
+        onPress={() => send('sorting')}
+        by={state.context.sort.by}
+        direction={state.context.sort.direction}
+      />
+    </View>
   );
 };
 

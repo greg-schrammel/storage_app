@@ -2,76 +2,110 @@ import { Machine, assign, State, Interpreter, spawn } from 'xstate';
 
 import { Item } from '@types/item';
 import { listenFolder } from 'services/directory';
-import { SortByKeys } from './components/SortBy';
+import { SortByKeys } from './components/Sort';
 import { EditEvent, EditMachine } from './EditMachine';
 import { FileActor, FileMachine } from './FileMachine';
-import { SearchEvent, SearchMachine } from './screens/Searching/SearchMachine';
+import { SearchEvent, SearchMachine } from './modals/Searching/SearchMachine';
 
-type UpdateDataEvent = { type: 'updateData'; data: Array<Item> };
+type UpdateFilesEvent = { type: 'updateFiles'; files: Array<Item> };
+type SortEvent = { type: 'sort'; by: SortByKeys; direction: 'up' | 'down' };
 export type FinderEvent =
   | { type: 'edit' }
   | { type: 'done' }
   | { type: 'search' }
-  | { type: 'sort'; by: SortByKeys }
-  | { type: 'add'; item: Item }
+  | { type: 'sorting' }
+  | { type: 'adding' }
+  | { type: 'editing' }
+  | { type: 'searching' }
+  | { type: 'add'; file: Item }
   | { type: 'addFolder' }
   | { type: 'addMedia' }
-  | UpdateDataEvent
+  | UpdateFilesEvent
+  | SortEvent
   | SearchEvent
   | EditEvent;
 
 interface FinderContext {
   folder: Item['id'];
-  data?: Array<{ id: Item['id']; ref: FileActor }>;
-  sortBy: SortByKeys;
+  parent: Item['id'] | void;
+  files?: Array<{ id: Item['id']; actor: FileActor }>;
+  sort: { by: SortByKeys; direction: 'up' | 'down' };
 }
 
 const FinderMachine = Machine<FinderContext, FinderEvent>(
   {
-    id: 'directory',
+    id: 'finder',
     initial: 'loading',
     context: {
+      parent: null,
       folder: 'root',
-      data: [],
-      sortBy: 'name' as SortByKeys,
+      files: [],
+      sort: {
+        by: 'name' as SortByKeys,
+        direction: 'up',
+      },
     },
     invoke: {
       src: 'listenFolder',
     },
+    on: {
+      updateFiles: {
+        actions: 'updateFiles',
+      },
+    },
     states: {
       loading: {
         on: {
-          updateData: {
-            actions: 'updateData',
+          updateFiles: {
+            actions: 'updateFiles',
             target: 'idle',
           },
         },
       },
       idle: {
         on: {
-          '': [{ cond: 'hasData', target: 'listing' }, { target: 'noData' }],
+          '': [{ cond: 'hasFiles', target: 'listing' }, { target: 'noFiles' }],
         },
       },
       listing: {
         on: {
-          edit: 'editing',
-          add: 'adding',
+          adding: 'adding',
+          editing: '.editing',
+          sorting: '.sorting',
+        },
+        initial: 'idle',
+        states: {
+          idle: {},
+          sorting: {
+            on: {
+              sort: {
+                target: 'idle',
+                actions: 'sort',
+              },
+            },
+          },
+          searching: {
+            invoke: {
+              src: SearchMachine,
+              onDone: 'idle',
+            },
+          },
+          editing: {
+            entry: ctx => ctx.files.forEach(file => file.actor.send('selecting')),
+            on: {
+              cancel: {
+                target: 'idle',
+                actions: ctx => ctx.files.forEach(file => file.actor.send('cancel')),
+              },
+            },
+          },
         },
       },
-      noData: {
+      noFiles: {
         on: {
           // edit: '',
           addFolder: 'adding.folder',
           addMedia: 'adding.media',
-        },
-      },
-      editing: {
-        invoke: {
-          id: 'edit',
-          src: EditMachine,
-          autoForward: true,
-          onDone: 'idle',
-          onError: 'idle',
         },
       },
       adding: {
@@ -96,44 +130,34 @@ const FinderMachine = Machine<FinderContext, FinderEvent>(
           },
         },
       },
-      searching: {
-        invoke: {
-          src: SearchMachine,
-          onDone: 'idle',
-        },
-      },
-      open: {},
-    },
-    on: {
-      search: 'searching',
-      sort: {
-        actions: 'sort',
-      },
-      updateData: {
-        actions: 'updateData',
-      },
     },
   },
   {
     guards: {
-      hasData: ctx => ctx.data && ctx.data.length > 0,
+      hasFiles: ctx => ctx.files && ctx.files.length > 0,
     },
     actions: {
-      sort: (ctx, e) => null, // assign({ items: ctx.items.sort() }),
+      sort: assign({
+        files: (ctx, e: SortEvent) => sort(ctx.files, e.by, e.direction),
+        sort: (_ctx, { by, direction }: SortEvent) => ({
+          by,
+          direction,
+        }),
+      }),
       add: (ctx, e) => null,
-      updateData: assign({
-        data: (ctx, e: UpdateDataEvent) => [
-          ...ctx.data,
-          ...e.data.map(item => ({
+      updateFiles: assign({
+        files: (ctx, e: UpdateFilesEvent) => [
+          ...ctx.files,
+          ...e.files.map(item => ({
             id: item.id,
-            ref: spawn(FileMachine.withContext(item), item.id),
+            actor: spawn(FileMachine.withContext(item), item.id),
           })),
         ],
       }),
     },
     services: {
       listenFolder: ctx => cb =>
-        listenFolder(ctx.folder, newData => cb({ type: 'updateData', data: newData })),
+        listenFolder(ctx.folder, newFiles => cb({ type: 'updateFiles', files: newFiles })),
     },
   },
 );

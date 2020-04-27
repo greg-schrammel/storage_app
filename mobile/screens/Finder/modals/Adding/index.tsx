@@ -3,7 +3,7 @@ import * as React from 'react';
 import Picker from 'components/Picker';
 import MenuItem from 'components/MenuItem';
 
-import { useFinder } from 'screens/Finder/FinderContext';
+import { useFinder } from 'screens/Finder/FinderProvider';
 
 import AddFolder from './Folder';
 

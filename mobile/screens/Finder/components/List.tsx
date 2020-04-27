@@ -5,30 +5,23 @@ import Icon from 'components/Icon';
 import Typography from 'components/Typography';
 
 import Button from 'components/Button';
-import { useFinder } from '../FinderContext';
+import { useFinder } from '../FinderProvider';
 
-import ListItem, { ITEM_HEIGHT } from './File';
+import ListFile, { LIST_FILE_HEIGHT } from './File';
 
-const EditActionsContainer = ({ children }) => (
-  <View
-    style={{
-      position: 'absolute',
-      bottom: 0,
-      width: '100%',
-      height: 40,
-      backgroundColor: 'dodgerblue',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      paddingHorizontal: 20,
-    }}
-  >
-    {children}
-  </View>
-);
-
-const ListEmptyItemStyle = StyleSheet.create({
-  container: {
+const Styles = StyleSheet.create({
+  editingContainer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 40,
+    backgroundColor: 'dodgerblue',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+  },
+  listEmptyContainer: {
     borderRadius: 10,
     backgroundColor: 'whitesmoke',
     marginHorizontal: 20,
@@ -48,11 +41,11 @@ const ListEmptyComponent = ({ onAddFolder, onAddMedia }) => (
     <Text style={[Typography.caption2, { textAlign: 'center', margin: 20, marginBottom: 10 }]}>
       Esta vazio por aqui, adicione alguma coisa
     </Text>
-    <TouchableOpacity onPress={onAddMedia} style={ListEmptyItemStyle.container}>
+    <TouchableOpacity onPress={onAddMedia} style={Styles.listEmptyContainer}>
       <Text style={[Typography.subheader]}>Salve da galeria</Text>
       <Icon name="photo" size={20} />
     </TouchableOpacity>
-    <TouchableOpacity onPress={onAddFolder} style={ListEmptyItemStyle.container}>
+    <TouchableOpacity onPress={onAddFolder} style={Styles.listEmptyContainer}>
       <Text style={Typography.subheader}>Crie uma pasta</Text>
       <Icon name="folder" size={20} />
     </TouchableOpacity>
@@ -63,23 +56,16 @@ const ListEmptyComponent = ({ onAddFolder, onAddMedia }) => (
 // numColumns={grid ? 2 : 1}
 // columnWrapperStyle
 
-// try {
-//   const [editingState] = useService(state.children.edit as EditInterpreter);
-//   selected = editingState.context.selected;
-// } catch {
-//   // if its not in editing state, the edit service doesnt exist and useService throws
-//   // it will probably be fixed I a next release of @xstate/react so gonna let it this way until
-// }
-
-const List = () => {
+const List = ({ onScroll }) => {
   const [state, send] = useFinder();
-  const isEditing = state.matches('editing');
   return (
     <View style={{ backgroundColor: '#fff', flex: 1, width: '100%' }}>
       <FlatList
+        scrollEventThrottle={1}
+        onScroll={onScroll}
         contentContainerStyle={{ paddingBottom: 50, paddingTop: 5 }}
-        data={state.context.data}
-        keyExtractor={item => item.id}
+        data={state.context.files}
+        keyExtractor={file => file.id}
         ListEmptyComponent={() =>
           state.matches('loading') ? null : (
             <ListEmptyComponent
@@ -88,27 +74,15 @@ const List = () => {
             />
           )
         }
-        renderItem={({ item }) => (
-          <ListItem
-            showSelector={isEditing}
-            itemActor={item.ref}
-            style={{ paddingHorizontal: 20 }}
-          />
+        renderItem={({ item: file }) => (
+          <ListFile actor={file.actor} style={{ paddingHorizontal: 20 }} />
         )}
         getItemLayout={(_data, index) => ({
-          length: ITEM_HEIGHT,
-          offset: ITEM_HEIGHT * index,
+          length: LIST_FILE_HEIGHT,
+          offset: LIST_FILE_HEIGHT * index,
           index,
         })}
       />
-      {isEditing && (
-        <EditActionsContainer>
-          <Button color="white" onPress={() => send('move')}>
-            Mover Todos
-          </Button>
-          <Icon name="trash" color="white" size={20} onPress={() => send('delete')} />
-        </EditActionsContainer>
-      )}
     </View>
   );
 };

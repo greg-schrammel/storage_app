@@ -1,56 +1,69 @@
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
+import Modal from 'react-native-modal';
 
-import BluryOverlay from 'components/BluryOverlay';
+import { string } from 'prop-types';
 import Typography from './Typography';
 import Button from './Button';
 
-const Picker = ({ children, title, onDismiss }) => {
+const Styles = StyleSheet.create({
+  container: {
+    borderTopRightRadius: 25,
+    borderTopLeftRadius: 25,
+    backgroundColor: 'white',
+    paddingTop: 5,
+    paddingBottom: 40,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  titleContainer: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'whitesmoke',
+    marginBottom: 5,
+    padding: 10,
+    alignItems: 'center',
+  },
+  cancelButton: {
+    borderRadius: 30,
+    marginHorizontal: 20,
+    marginTop: 10,
+    paddingVertical: 15,
+    backgroundColor: 'whitesmoke',
+  },
+});
+
+interface PickerProps {
+  children: React.ReactElement | Array<React.ReactElement>;
+  onDismiss: () => void;
+  above?: React.ReactElement;
+  title?: string;
+}
+
+const Picker = ({ above, children, title, onDismiss }: PickerProps) => {
+  const [isVisible, setVisible] = React.useState(true);
   return (
-    <BluryOverlay
-      intensity={75}
-      onPress={onDismiss}
-      animationType="slide"
-      style={{ flexDirection: 'column-reverse' }}
+    <Modal
+      isVisible={isVisible}
+      animationInTiming={200}
+      animationOutTiming={200}
+      onBackdropPress={() => setVisible(false)}
+      onModalHide={onDismiss}
+      style={{ margin: 0 }}
     >
-      <View
-        style={{
-          borderTopRightRadius: 25,
-          borderTopLeftRadius: 25,
-          backgroundColor: 'white',
-          paddingTop: 5,
-          paddingBottom: 40,
-        }}
-      >
-        <View style={{ borderBottomWidth: 1, borderBottomColor: 'whitesmoke', marginBottom: 5 }}>
-          <Text style={[Typography.header, { width: '100%', padding: 10, textAlign: 'center' }]}>
-            {title}
-          </Text>
-        </View>
-        {/* <View
-            style={{
-              backgroundColor: 'lightgrey',
-              width: 30,
-              borderRadius: 20,
-              height: 5,
-              margin: 10,
-            }}
-          /> */}
+      {above}
+      <View style={Styles.container}>
+        {title && (
+          <View style={Styles.titleContainer}>
+            <Text style={[Typography.header]}>{title}</Text>
+          </View>
+        )}
         {children}
-        <Button
-          onPress={onDismiss}
-          backgroundColor="whitesmoke"
-          style={{
-            borderRadius: 30,
-            marginHorizontal: 20,
-            marginTop: 10,
-            paddingVertical: 15,
-          }}
-        >
+        <Button onPress={() => setVisible(false)} style={Styles.cancelButton}>
           Cancelar
         </Button>
       </View>
-    </BluryOverlay>
+    </Modal>
   );
 };
 

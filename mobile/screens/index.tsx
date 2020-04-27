@@ -8,7 +8,7 @@ import FinderScreen from 'screens/Finder';
 const Tab = createBottomTabNavigator();
 
 const routeIcon = {
-  directory: 'folder',
+  finder: 'folder',
   shared: 'users',
   favorites: 'star',
   config: 'user',
@@ -27,14 +27,16 @@ function Router() {
   return (
     <NavigationContainer theme={navigationTheme}>
       <Tab.Navigator
-        initialRouteName="shared"
+        initialRouteName="finder"
         screenOptions={({ route }) => ({
           tabBarLabel: route.name,
-          tabBarIcon: ({ color }) => <Icon name={routeIcon[route.name]} size={22} color={color} />,
+          tabBarIcon: ({ color }) => <Icon name={routeIcon[route.name]} size={24} color={color} />,
         })}
         tabBarOptions={{
           activeTintColor: 'dodgerblue',
           inactiveTintColor: 'darkgray',
+          showLabel: false,
+          style: { backgroundColor: 'whitesmoke' },
         }}
       >
         <Tab.Screen
@@ -43,11 +45,7 @@ function Router() {
           component={FinderScreen}
         />
         <Tab.Screen options={{ tabBarLabel: 'shared' }} name="shared" component={FinderScreen} />
-        <Tab.Screen
-          options={{ tabBarLabel: 'directory' }}
-          name="directory"
-          component={FinderScreen}
-        />
+        <Tab.Screen options={{ tabBarLabel: 'finder' }} name="finder" component={FinderScreen} />
         <Tab.Screen options={{ tabBarLabel: 'config' }} name="config" component={FinderScreen} />
       </Tab.Navigator>
     </NavigationContainer>

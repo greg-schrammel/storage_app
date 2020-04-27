@@ -8,6 +8,7 @@ import {
   StyleProp,
   ViewStyle,
   TextInputProps,
+  Animated,
 } from 'react-native';
 
 import Icon, { IconName } from 'components/Icon';
@@ -30,13 +31,14 @@ interface InputProps extends TextInputProps {
   icon?: IconName;
   label?: string;
   style?: StyleProp<ViewStyle>;
+  disabled?: boolean;
 }
 
 const Input = ({ icon, style, ...props }: InputProps) => (
-  <View style={[Styles.input, style]}>
+  <Animated.View style={[Styles.input, style]}>
     {icon && <Icon name={icon} size={20} color="lightgrey" style={{ marginRight: 10 }} />}
     <TextInput style={Styles.text} {...props} />
-  </View>
+  </Animated.View>
 );
 
 const InputWithLabel = ({ label, style, ...props }: InputProps) => (

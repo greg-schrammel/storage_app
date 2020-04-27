@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { forwardRef } from 'react';
 import { View, TouchableOpacity, ViewStyle, StyleProp } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 
 export type IconName =
   | 'folder'
@@ -33,15 +33,16 @@ interface IconProps {
 const Icons = {
   photo: ({ size, color }) => <FontAwesome name="photo" size={size - 2} color={color} />, // (?) this size is 2 larger
   search: ({ size, color }) => <FontAwesome name="search" size={size - 2} color={color} />, // (?) this size is 2 larger
+  plus: ({ size, color }) => (
+    <FontAwesome name="plus" size={size} color={color} style={{ height: size - 1 }} />
+  ), // (?) OK IM STARTING TO HATE THIS MFKNG ICONS
+  clipboard: ({ size, color }) => <FontAwesome5 name="clipboard" size={size} color={color} />,
 };
 
 const Icon = ({ name, size, color, style, _ref }: IconProps) => {
   const RawIcon = Icons[name] || (props => <FontAwesome name={name} {...props} />);
   return (
-    <View
-      ref={_ref}
-      style={[style, { width: size, alignItems: 'center', justifyContent: 'center' }]}
-    >
+    <View ref={_ref} style={[style, { alignItems: 'center', justifyContent: 'center' }]}>
       <RawIcon size={size} color={color} />
     </View>
   );

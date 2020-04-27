@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, TouchableOpacity, Text, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import Typography from './Typography';
 
 const Styles = StyleSheet.create({
@@ -17,21 +17,12 @@ interface ButtonProps {
   children: string;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
-  backgroundColor?: string;
-  size?: 'md' | 'sm';
-  color?: string;
+  labelStyle?: StyleProp<TextStyle>;
 }
 
-const Button = ({ children, onPress, style, size = 'md', color, backgroundColor }: ButtonProps) => (
-  <TouchableOpacity onPress={onPress} style={[Styles.button, style, { backgroundColor }]}>
-    <Text
-      style={[
-        size === 'md' ? Typography.caption2 : Typography.caption,
-        { color, fontWeight: '500' },
-      ]}
-    >
-      {children}
-    </Text>
+const Button = ({ children, onPress, style, labelStyle }: ButtonProps) => (
+  <TouchableOpacity onPress={onPress} style={[Styles.button, style]}>
+    <Text style={[Typography.caption2, labelStyle]}>{children}</Text>
   </TouchableOpacity>
 );
 
