@@ -1,11 +1,10 @@
 import { Machine, assign, State, Interpreter, spawn } from 'xstate';
 
 import { Item } from '@types/item';
-import { listenFolder } from 'services/directory';
+import { listenFolder } from 'services/finder';
 import { SortByKeys } from './components/Sort';
-import { EditEvent, EditMachine } from './EditMachine';
 import { FileActor, FileMachine } from './FileMachine';
-import { SearchEvent, SearchMachine } from './modals/Searching/SearchMachine';
+import { SearchEvent, SearchMachine } from './screens/Searching/SearchMachine';
 
 type UpdateFilesEvent = { type: 'updateFiles'; files: Array<Item> };
 type SortEvent = { type: 'sort'; by: SortByKeys; direction: 'up' | 'down' };
@@ -22,8 +21,7 @@ export type FinderEvent =
   | { type: 'addMedia' }
   | UpdateFilesEvent
   | SortEvent
-  | SearchEvent
-  | EditEvent;
+  | SearchEvent;
 
 interface FinderContext {
   folder: Item['id'];

@@ -23,7 +23,9 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "gtc.storage",
+      "usesAppleSignIn": true
     }
   }
 }

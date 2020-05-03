@@ -1,18 +1,17 @@
 import * as React from 'react';
+
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Icon from 'components/Icon';
+
 import FinderScreen from 'screens/Finder';
+import AuthScreen from 'screens/Auth';
+import SplashScreen from 'screens/Splash';
+
+import useUser from './useUser';
 
 const Tab = createBottomTabNavigator();
-
-const routeIcon = {
-  finder: 'folder',
-  shared: 'users',
-  favorites: 'star',
-  config: 'user',
-};
 
 const navigationTheme = {
   ...DefaultTheme,
@@ -23,7 +22,28 @@ const navigationTheme = {
   },
 };
 
+const routeIcon = {
+  finder: 'folder',
+  shared: 'users',
+  favorites: 'star',
+  config: 'user',
+};
+
+const FavoritesScreen = () => <FinderScreen folderId="favorites" />;
+const SharedScreen = () => <FinderScreen folderId="shared" />;
+
 function Router() {
+  const user = useUser();
+  const [isReady, setIsReady] = React.useState(false);
+  if (!isReady)
+    return (
+      <SplashScreen
+        img="assets/splash.png"
+        isVisible={typeof user === 'undefined'}
+        onHide={() => setIsReady(true)}
+      />
+    );
+  if (!user) return <AuthScreen />;
   return (
     <NavigationContainer theme={navigationTheme}>
       <Tab.Navigator
@@ -42,9 +62,9 @@ function Router() {
         <Tab.Screen
           options={{ tabBarLabel: 'favorites' }}
           name="favorites"
-          component={FinderScreen}
+          component={FavoritesScreen}
         />
-        <Tab.Screen options={{ tabBarLabel: 'shared' }} name="shared" component={FinderScreen} />
+        <Tab.Screen options={{ tabBarLabel: 'shared' }} name="shared" component={SharedScreen} />
         <Tab.Screen options={{ tabBarLabel: 'finder' }} name="finder" component={FinderScreen} />
         <Tab.Screen options={{ tabBarLabel: 'config' }} name="config" component={FinderScreen} />
       </Tab.Navigator>

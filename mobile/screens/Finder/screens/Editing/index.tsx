@@ -2,15 +2,20 @@ import * as React from 'react';
 import { Animated, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+import Icon from 'components/Icon';
 import { useFinder } from '../../FinderProvider';
 
-import Icon from 'components/Icon';
-
 const Styles = StyleSheet.create({
-  container: {
+  position: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
+  },
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    height: 84,
     backgroundColor: 'whitesmoke',
     borderTopColor: 'lightgrey',
     borderTopWidth: 0.5,
@@ -31,15 +36,8 @@ export const EditingModal = () => {
     };
   }, [state.value, navigator]);
   return canRender ? (
-    <Animated.View style={Styles.container}>
-      <SafeAreaView
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-around',
-          height: 84,
-        }}
-      >
+    <Animated.View style={Styles.position}>
+      <SafeAreaView style={Styles.container}>
         <Icon name="share" color="dodgerblue" size={24} />
         <Icon name="folder" color="dodgerblue" size={24} />
         <Icon name="clipboard" color="dodgerblue" size={24} />

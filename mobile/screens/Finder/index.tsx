@@ -9,9 +9,9 @@ import TopBar from 'screens/Finder/components/Topbar';
 import { FinderProvider } from './FinderProvider';
 import FinderMachine from './FinderMachine';
 
-import AddingModal from './modals/Adding';
-import SortingModal from './modals/Sorting';
-import EditingModal from './modals/Editing';
+import AddingModal from './screens/Adding';
+import SortingModal from './screens/Sorting';
+import EditingScreen from './screens/Editing';
 
 function FinderScreen({ folderId }): React.ReactElement {
   const [state, send, service] = useMachine(FinderMachine, { context: { folder: folderId } });
@@ -26,7 +26,7 @@ function FinderScreen({ folderId }): React.ReactElement {
       </SafeAreaView>
       {state.matches('adding') && <AddingModal />}
       {state.matches('listing.sorting') && <SortingModal />}
-      {state.matches('listing.editing') && <EditingModal />}
+      {state.matches('listing.editing') && <EditingScreen />}
     </FinderProvider>
   );
 }

@@ -9,31 +9,31 @@ service cloud.firestore {
       allow read, write: if authUserId() == userId;
     }
 
-    match /items/{itemId} {
+    match /files/{fileId} {
       allow read, write: if isOwner();
       match /contents {
-        allow read: if canReadContent(itemId);
-        allow write: if canWriteContent(itemId);
+        allow read: if canReadContent(fileId);
+        allow write: if canWriteContent(fileId);
       }
       match /name {
-        allow read: if canReadContent(itemId);
-        allow write: if canWriteContent(itemId);
+        allow read: if canReadContent(fileId);
+        allow write: if canWriteContent(fileId);
       }
     }
 
 
-    // Item
-    function getItem(itemId) {
-      return getData('items', itemId);
+    // File
+    function getFile(fileId) {
+      return getData('files', fileId);
     }
-    function isOwner(itemId) {
-      return authUserId() == getItem(itemId).owner;
+    function isOwner(fileId) {
+      return authUserId() == getFile(fileId).owner;
     }
-    function canReadContent(itemId) {
-      return isOwner(itemId) || authUserId() in getItem(itemId).permissions.read
+    function canReadContent(fileId) {
+      return isOwner(fileId) || authUserId() in getFile(fileId).permissions.read
     }
-    function canWriteContent(itemId) {
-      return isOwner(itemId) || authUserId() in getItem(itemId).permissions.write
+    function canWriteContent(fileId) {
+      return isOwner(fileId) || authUserId() in getFile(fileId).permissions.write
     }
 
     // Util

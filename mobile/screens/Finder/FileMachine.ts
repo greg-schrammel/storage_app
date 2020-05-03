@@ -1,7 +1,7 @@
 import { Machine, assign, Interpreter, Actor, sendParent, send } from 'xstate';
 
 import { Item } from '@types/item';
-import { fetchItemContents } from 'services/directory';
+import { fetchItemContents } from 'services/finder';
 
 export type FileEvent =
   | { type: 'rename' }

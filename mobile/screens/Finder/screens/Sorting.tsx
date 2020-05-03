@@ -4,7 +4,7 @@ import MenuItem from 'components/MenuItem';
 import Picker from 'components/Picker';
 import { useFinder } from '../FinderProvider';
 
-export const SortingModal = () => {
+const SortingModal = () => {
   const [state, send] = useFinder();
   return (
     <Picker title="Ordenar" onDismiss={() => send('cancel')}>

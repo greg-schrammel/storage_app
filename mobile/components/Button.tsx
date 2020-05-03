@@ -10,19 +10,27 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 10,
+    flexDirection: 'row',
   },
 });
 
 interface ButtonProps {
   children: string;
+  icon: React.ReactElement | void;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
 }
 
-const Button = ({ children, onPress, style, labelStyle }: ButtonProps) => (
-  <TouchableOpacity onPress={onPress} style={[Styles.button, style]}>
-    <Text style={[Typography.caption2, labelStyle]}>{children}</Text>
+const Button = ({ children, onPress, style, labelStyle, icon }: ButtonProps) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={[Styles.button, style /* icon && { justifyContent: 'flex-start' } */]}
+  >
+    {icon}
+    <Text style={[Typography.caption2, labelStyle, { flex: 1, textAlign: 'center' }]}>
+      {children}
+    </Text>
   </TouchableOpacity>
 );
 
