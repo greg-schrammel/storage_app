@@ -2,7 +2,8 @@
   "extends": ["airbnb-typescript-prettier"],
   "rules": {
     "react/jsx-filename-extension": "off",
-    "import/no-extraneous-dependencies": "off"
+    "import/no-extraneous-dependencies": "off",
+    "import/no-dynamic-require": "off"
   },
   "settings": {
     "import/resolver": {

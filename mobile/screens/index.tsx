@@ -36,13 +36,7 @@ function Router() {
   const user = useUser();
   const [isReady, setIsReady] = React.useState(false);
   if (!isReady)
-    return (
-      <SplashScreen
-        img="assets/splash.png"
-        isVisible={typeof user === 'undefined'}
-        onHide={() => setIsReady(true)}
-      />
-    );
+    return <SplashScreen isVisible={typeof user === 'undefined'} onHide={() => setIsReady(true)} />;
   if (!user) return <AuthScreen />;
   return (
     <NavigationContainer theme={navigationTheme}>

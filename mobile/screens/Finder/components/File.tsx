@@ -8,8 +8,8 @@ import Typography from 'components/Typography';
 
 import { Interpreter } from 'xstate';
 import { Item } from '@types/item';
-import { FileActor, FileAction } from '../FileMachine';
 import Picker from 'components/Picker';
+import { FileActor, FileAction } from '../FileMachine';
 import { useFinder } from '../FinderProvider';
 
 interface ListItemProps {
@@ -109,6 +109,7 @@ export const ListFile = ({ actor, style }: ListItemProps) => {
   const isSelecting = state.matches('listing.selecting');
   return (
     <TouchableOpacity
+      delayPressIn={300}
       activeOpacity={isSelecting ? 1 : 0.2}
       onPress={() => (isSelecting ? send('select') : send('open'))}
       style={[{ height: LIST_FILE_HEIGHT, alignItems: 'center', flexDirection: 'row' }, style]}

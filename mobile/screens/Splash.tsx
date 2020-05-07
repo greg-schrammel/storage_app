@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Animated, Image } from 'react-native';
 import { SplashScreen } from 'expo';
 
-function Splash({ isVisible, onHide, img }) {
+function Splash({ isVisible, onHide }) {
   const opacity = React.useRef(new Animated.Value(1)).current;
   React.useEffect(() => {
     SplashScreen.preventAutoHide();
@@ -25,7 +25,8 @@ function Splash({ isVisible, onHide, img }) {
       <Image
         onLoadEnd={() => SplashScreen.hide()}
         style={{ width: '100%', resizeMode: 'contain' }}
-        source={require(img)}
+        // eslint-disable-next-line global-require
+        source={require('assets/splash.png')}
       />
     </Animated.View>
   );
